@@ -15,14 +15,23 @@ int main() {
     Vector2 circlePosition = {(float) screenWidth / 2.0f, (float) screenHeight - 100.0f}; // Position
     float circleRadius = 25.0f;                                                           // Size
     float risingSpeed = 50.f;
+    float moveSpeed = 250.f;
 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
-        // Update logic (example: Player movement, collision detection)
+        float deltaTime = GetFrameTime();
 
-        // Move the object above with delta time
-        circlePosition.y -= risingSpeed * GetFrameTime();
+        // Player controls
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
+            circlePosition.x -= moveSpeed * deltaTime;
+        }
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
+            circlePosition.x += moveSpeed * deltaTime;
+        }
+
+        // Move the object above
+        circlePosition.y -= risingSpeed * deltaTime;
 
         // Object reset spawning from below after flying off screen above
         if (circlePosition.y < -circleRadius) {
