@@ -2,8 +2,8 @@
 
 int main() {
     // Screen Initialization
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 450;
+    const int screenHeight = 800;
 
     // Run the window and show title
     InitWindow(screenWidth, screenHeight, "Game Jam - Hello World");
@@ -11,6 +11,10 @@ int main() {
     // Framerate per second
     SetTargetFPS(60); 
 
+    // Initialize the object
+    Vector2 circlePosition = {(float) screenWidth / 2.0f, (float) screenHeight - 100.0f}; // Position
+    float circleRadius = 25.0f;                                                           // Size
+ 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
@@ -21,9 +25,9 @@ int main() {
             // Always clear background first to avoid graphical issues
             ClearBackground(RAYWHITE);
 
-            // DrawText(text, x_position, y_position, font_size, color)
-            DrawText("Hello World!", 300, 200, 30, DARKGRAY);
-            
+            // Example: DrawText(text, x_position, y_position, font_size, color)
+            DrawCircleV(circlePosition, circleRadius, BLACK);
+
         EndDrawing();
     }
 
