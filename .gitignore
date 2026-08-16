@@ -1,0 +1,25 @@
+# Compiled binaries and executables
+game
+*.exe
+*.out
+*.app
+
+# Object and archive files
+*.o
+*.a
+*.so
+*.dylib
+
+# Build directories
+obj/
+bin/
+build/
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# In case you clone/keep the raylib source folder in the project root
+raylib/
