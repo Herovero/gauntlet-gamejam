@@ -11,11 +11,15 @@ int main() {
     // Framerate per second
     SetTargetFPS(60); 
 
-    // Initialize the object
+    // Initialize player object
     Vector2 circlePosition = {(float) screenWidth / 2.0f, (float) screenHeight - 100.0f}; // Position
     float circleRadius = 25.0f;                                                           // Size
-    float risingSpeed = 50.f;
     float moveSpeed = 250.f;
+
+    // Initialize obstacle object
+    // Rectangle format: { x, y, width, height }
+    Rectangle obstacle = {100, 100, 150, 30};
+    float fallSpeed = 150.0f;
 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
@@ -40,13 +44,8 @@ int main() {
             circlePosition.x = (float)screenWidth - circleRadius;
         }
 
-        // Move the object above
-        circlePosition.y -= risingSpeed * deltaTime;
-
-        // Object reset spawning from below after flying off screen above
-        if (circlePosition.y < -circleRadius) {
-            circlePosition.y = screenHeight + circleRadius;
-        }
+        // Move the obstacle down
+        obstacle.y += fallSpeed * deltaTime;
 
         // Drawing logic
         BeginDrawing();
@@ -55,6 +54,7 @@ int main() {
 
             // Example: DrawText(text, x_position, y_position, font_size, color)
             DrawCircleV(circlePosition, circleRadius, BLACK);
+            DrawRectangleRec(obstacle, RED);
 
         EndDrawing();
     }
