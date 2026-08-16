@@ -29,6 +29,16 @@ int main() {
         if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
             circlePosition.x += moveSpeed * deltaTime;
         }
+        
+        // Add negative x boundary
+        if (circlePosition.x < circleRadius){
+            circlePosition.x = circleRadius;
+        }
+
+        // Add positive x boundary
+        if (circlePosition.x > (float)screenWidth - circleRadius){
+            circlePosition.x = (float)screenWidth - circleRadius;
+        }
 
         // Move the object above
         circlePosition.y -= risingSpeed * deltaTime;
