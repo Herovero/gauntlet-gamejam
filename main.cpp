@@ -1,9 +1,10 @@
 #include "raylib.h"
+#include <cmath>
 
 int main() {
     // Screen Initialization
-    const int screenWidth = 450;
-    const int screenHeight = 800;
+    const int screenWidth = 1280;
+    const int screenHeight = 720;
 
     // Run the window and show title
     InitWindow(screenWidth, screenHeight, "Game Jam - Hello World");
@@ -43,6 +44,12 @@ int main() {
             if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
                 circlePosition.x += moveSpeed * deltaTime;
             }
+            if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)){
+                circlePosition.y -= moveSpeed * deltaTime;
+            }
+            if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)){
+                circlePosition.y += moveSpeed * deltaTime;
+            }
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
@@ -78,13 +85,18 @@ int main() {
 
         // Drawing logic
         BeginDrawing();
-            // Always clear background first to avoid graphical issues
-            ClearBackground(RAYWHITE);
+            // Switch background color
+            ClearBackground(SKYBLUE);
 
             // Example: DrawText(text, x_position, y_position, font_size, color)
             if (!isGameOver){
-                DrawCircleV(circlePosition, circleRadius, BLACK);
                 DrawRectangleRec(obstacle, RED);
+
+                // Add wind sway to the visual
+                float windSway = std::sin(GetTime() * 4.0f) * 6.0f;
+                Vector2 renderPos = { circlePosition.x + windSway, circlePosition.y };
+
+                DrawCircleV(renderPos, circleRadius, BLACK);
             } else {
                 DrawText("GAME OVER", screenWidth / 2 - 110, screenHeight / 2 - 30, 40, RED);
                 DrawText("Press SPACE to Restart", screenWidth / 2 - 120, screenHeight / 2 + 20, 20, DARKGRAY);
