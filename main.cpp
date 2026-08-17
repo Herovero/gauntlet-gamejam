@@ -2,6 +2,7 @@
 #include "WauBulan.hpp"
 #include "SwingingKid.hpp"
 #include "Obstacle.hpp"
+#include "Background.hpp"
 
 int main() {
     // Screen Initialization
@@ -13,6 +14,8 @@ int main() {
 
     // Framerate per second
     SetTargetFPS(60); 
+
+    Background bg("assets/background.png", screenWidth, screenHeight, 10.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos);
@@ -26,8 +29,8 @@ int main() {
     while (!WindowShouldClose()) { 
         float dt = GetFrameTime();
 
-        // Player controls
         if (!isGameOver){
+            bg.Update(dt);
             wau.Update(dt, screenWidth, screenHeight);
             kid.Update(dt, wau.pos);
             obstacle.Update(dt, screenWidth, screenHeight);
@@ -50,6 +53,8 @@ int main() {
             // Switch background color
             ClearBackground(SKYBLUE);
 
+            bg.Draw();
+
             // Example: DrawText(text, x_position, y_position, font_size, color)
             if (!isGameOver){
                 wau.Draw();
@@ -64,6 +69,7 @@ int main() {
     }
 
     wau.Unload();
+    bg.Unload();
     CloseWindow(); 
 
     return 0;
