@@ -14,7 +14,7 @@ int main() {
     // Framerate per second
     SetTargetFPS(60); 
 
-    WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f);
+    WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos);
     Obstacle obstacle(screenWidth);
 
@@ -31,9 +31,17 @@ int main() {
             wau.Update(dt, screenWidth, screenHeight);
             kid.Update(dt, wau.pos);
             obstacle.Update(dt, screenWidth, screenHeight);
+
+            if (CheckCollisionCircleRec(wau.pos, wau.radius, obstacle.rec) ||
+                CheckCollisionCircleRec(kid.pos, kid.radius, obstacle.rec)) {
+                isGameOver = true;
+            }
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
+                wau = WauBulan(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
+                kid = SwingingKid(wau.pos);
+                obstacle.Reset(screenWidth);
             }
         }
 
@@ -47,7 +55,6 @@ int main() {
                 wau.Draw();
                 kid.Draw(wau.pos);
                 obstacle.Draw();
-                //DrawRectangleRec(obstacle, RED);
             } else {
                 DrawText("GAME OVER", screenWidth / 2 - 110, screenHeight / 2 - 30, 40, RED);
                 DrawText("Press SPACE to Restart", screenWidth / 2 - 120, screenHeight / 2 + 20, 20, DARKGRAY);
@@ -55,6 +62,8 @@ int main() {
 
         EndDrawing();
     }
+
+    wau.Unload();
     CloseWindow(); 
 
     return 0;

@@ -1,10 +1,14 @@
 #include "WauBulan.hpp"
 #include <cmath>
 
-WauBulan::WauBulan(float startX, float startY) {
+WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     pos = { startX, startY };
     radius = 25.0f;
     speed = 250.0f;
+
+    texture = LoadTexture(texturePath);
+    spriteWidth = 200.0f;
+    spriteHeight = 100.0f;
 }
 
 void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
@@ -26,5 +30,15 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
 void WauBulan::Draw() {
     float windSway = std::sin(GetTime() * 4.0f) * 6.0f;
     Vector2 renderPos = { pos.x + windSway, pos.y };
-    DrawCircleV(renderPos, radius, BLACK);
+
+    Rectangle sourceRec = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+    Rectangle destRec   = { renderPos.x, renderPos.y, spriteWidth, spriteHeight };
+    Vector2 origin      = { spriteWidth / 2.0f, spriteHeight / 2.0f };
+
+    // DrawCircleV(renderPos, radius, BLACK);
+    DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+}
+
+void WauBulan::Unload() {
+    UnloadTexture(texture);
 }
