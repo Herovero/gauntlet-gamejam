@@ -9,14 +9,29 @@ WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     texture = LoadTexture(texturePath);
     spriteWidth = 200.0f;
     spriteHeight = 100.0f;
+    
+    rotation = 0.0f;
+    targetRotation = 0.0f;
 }
 
 void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
+    targetRotation = 0.0f;
+
     // Movement
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) pos.x -= speed * dt;
-    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) pos.x += speed * dt;
+    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
+        pos.x -= speed * dt;
+        targetRotation -= 20.0f;
+    }
+    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
+        pos.x += speed * dt;
+        targetRotation += 20.f;
+    }
+
     if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) pos.y -= speed * dt;
     if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) pos.y += speed * dt;
+
+    // Steer Animation (Smoothly interpolate current rotation to target rotation)
+    rotation += (targetRotation - rotation) * 10.0f * dt;
     
     // Horizontal boundaries
     if (pos.x < radius) pos.x = radius;
@@ -37,12 +52,15 @@ void WauBulan::Draw() {
     // Idle animation (oscillates between -3.0 and +3.0 degrees)
     float windTilt = std::sin(time * 6.0f) * 3.0f;
 
+    // Combine idle and steering animation
+    float finalRotation = rotation + windTilt;
+
     Rectangle sourceRec = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
     Rectangle destRec   = { renderPos.x, renderPos.y, spriteWidth, spriteHeight };
     Vector2 origin      = { spriteWidth / 2.0f, spriteHeight / 2.0f };
 
     // DrawTexturePro(Texture2D texture, Rectangle srcrec, Rectangle dstrec, Vector2 origin, float rotation, Color tint)
-    DrawTexturePro(texture, sourceRec, destRec, origin, windTilt, WHITE);
+    DrawTexturePro(texture, sourceRec, destRec, origin, finalRotation, WHITE);
 
     // Collision hitbox debug
     DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
