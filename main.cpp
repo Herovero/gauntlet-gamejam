@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "WauBulan.hpp"
+#include "SwingingKid.hpp"
 
 int main() {
     // Screen Initialization
@@ -13,16 +14,11 @@ int main() {
     SetTargetFPS(60); 
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f);
+    SwingingKid kid(wau.pos);
 
     // Initialize obstacle object
     //float obsWidth = 150.0f;
     //float obsHeight = 30.0f;
-
-    // Initialize player object
-    //Vector2 playerPos = { wauPos.x, wauPos.y + 120.0f };
-    //Vector2 playerVelocity = { 0.0f, 0.0f };
-    //float stringLength = 120.0f;
-    //float playerRadius = 15.0f;
 
     // Randomize obstacle x position
     //float randomStartX = (float)GetRandomValue(0, screenWidth - (int)obsWidth);
@@ -42,6 +38,7 @@ int main() {
         // Player controls
         if (!isGameOver){
             wau.Update(dt, screenWidth, screenHeight);
+            kid.Update(dt, wau.pos);
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
@@ -105,8 +102,8 @@ int main() {
             // Example: DrawText(text, x_position, y_position, font_size, color)
             if (!isGameOver){
                 wau.Draw();
+                kid.Draw(wau.pos);
                 //DrawRectangleRec(obstacle, RED);
-                //DrawCircleV(playerPos, playerRadius, ORANGE);
             } else {
                 DrawText("GAME OVER", screenWidth / 2 - 110, screenHeight / 2 - 30, 40, RED);
                 DrawText("Press SPACE to Restart", screenWidth / 2 - 120, screenHeight / 2 + 20, 20, DARKGRAY);
