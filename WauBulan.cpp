@@ -28,15 +28,21 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
 }
 
 void WauBulan::Draw() {
-    float windSway = std::sin(GetTime() * 4.0f) * 6.0f;
+    float time = (float)GetTime();
+
+    // Wind Drft
+    float windSway = std::sin(time * 4.0f) * 6.0f;
     Vector2 renderPos = { pos.x + windSway, pos.y };
+
+    // Idle animation (oscillates between -3.0 and +3.0 degrees)
+    float windTilt = std::sin(time * 6.0f) * 3.0f;
 
     Rectangle sourceRec = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
     Rectangle destRec   = { renderPos.x, renderPos.y, spriteWidth, spriteHeight };
     Vector2 origin      = { spriteWidth / 2.0f, spriteHeight / 2.0f };
 
-    // DrawCircleV(renderPos, radius, BLACK);
-    DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+    // DrawTexturePro(Texture2D texture, Rectangle srcrec, Rectangle dstrec, Vector2 origin, float rotation, Color tint)
+    DrawTexturePro(texture, sourceRec, destRec, origin, windTilt, WHITE);
 
     // Collision hitbox debug
     DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
