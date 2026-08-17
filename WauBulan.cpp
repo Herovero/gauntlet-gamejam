@@ -12,10 +12,12 @@ WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     
     rotation = 0.0f;
     targetRotation = 0.0f;
+    stretchFactor = 1.0f;
 }
 
 void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
     targetRotation = 0.0f;
+    stretchFactor = 1.0f;
 
     // Movement
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
@@ -26,9 +28,14 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
         pos.x += speed * dt;
         targetRotation += 20.f;
     }
-
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) pos.y -= speed * dt;
-    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) pos.y += speed * dt;
+    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
+        pos.y -= speed * dt;
+        stretchFactor = 1.15f;
+    }
+    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
+        pos.y += speed * dt;
+        stretchFactor = 0.90f;
+    }
 
     // Steer Animation (Smoothly interpolate current rotation to target rotation)
     rotation += (targetRotation - rotation) * 10.0f * dt;
@@ -55,9 +62,13 @@ void WauBulan::Draw() {
     // Combine idle and steering animation
     float finalRotation = rotation + windTilt;
 
+    //
+    float currentWidth  = spriteWidth * (2.0f - stretchFactor);
+    float currentHeight = spriteHeight * stretchFactor;
+
     Rectangle sourceRec = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-    Rectangle destRec   = { renderPos.x, renderPos.y, spriteWidth, spriteHeight };
-    Vector2 origin      = { spriteWidth / 2.0f, spriteHeight / 2.0f };
+    Rectangle destRec   = { renderPos.x, renderPos.y, currentWidth, currentHeight };
+    Vector2 origin      = { currentWidth / 2.0f, currentHeight / 2.0f };
 
     // DrawTexturePro(Texture2D texture, Rectangle srcrec, Rectangle dstrec, Vector2 origin, float rotation, Color tint)
     DrawTexturePro(texture, sourceRec, destRec, origin, finalRotation, WHITE);

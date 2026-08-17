@@ -16,6 +16,7 @@ class WauBulan {
         // Visual Polish properties
         float rotation;         // Current
         float targetRotation;   // Desired
+        float stretchFactor;
 
         WauBulan(float startX, float startY, const char* texturePath);
         void Update(float dt, int screenWidth, int screenHeight);
