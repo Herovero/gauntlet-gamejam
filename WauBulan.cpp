@@ -7,7 +7,7 @@ WauBulan::WauBulan(float startX, float startY) {
     speed = 250.0f;
 }
 
-void WauBulan::DrawUpdate(float dt, int screenWidth, int screenHeight) {
+void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
     // Movement
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) pos.x -= speed * dt;
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) pos.x += speed * dt;
@@ -23,7 +23,7 @@ void WauBulan::DrawUpdate(float dt, int screenWidth, int screenHeight) {
     if (pos.y > screenHeight - radius) pos.y = screenHeight - radius;
 }
 
-void Draw() {
+void WauBulan::Draw() {
     float windSway = std::sin(GetTime() * 4.0f) * 6.0f;
     Vector2 renderPos = { pos.x + windSway, pos.y };
     DrawCircleV(renderPos, radius, BLACK);

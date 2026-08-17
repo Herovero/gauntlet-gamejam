@@ -3,11 +3,11 @@
 
 class WauBulan {
     public:
-        float pos;
+        Vector2 pos;
         float radius;
         float speed;
 
-        WauBulan(float startX, startY);
+        WauBulan(float startX, float startY);
         void Update(float dt, int screenWidth, int screenHeight);
         void Draw();
-}
+};
