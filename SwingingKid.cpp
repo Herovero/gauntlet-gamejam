@@ -46,4 +46,7 @@ void SwingingKid::Update(float dt, Vector2 anchorPos) {
 void SwingingKid::Draw(Vector2 anchorPos) {
     DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
     DrawCircleV(pos, radius, ORANGE);
+
+    // Collision Hitbox Debug
+    DrawCircleLines((int)pos.x, (int)pos.y, radius, GREEN);
 }

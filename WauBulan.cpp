@@ -37,6 +37,9 @@ void WauBulan::Draw() {
 
     // DrawCircleV(renderPos, radius, BLACK);
     DrawTexturePro(texture, sourceRec, destRec, origin, 0.0f, WHITE);
+
+    // Collision hitbox debug
+    DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
 }
 
 void WauBulan::Unload() {
