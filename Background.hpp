@@ -16,6 +16,7 @@ public:
 
     Background(const char* imagePath, int screenWidth, int screenHeight, float scrollSpeed);
     void Update(float dt);
+    void Reset();
     void Draw();
     void Unload();
 };

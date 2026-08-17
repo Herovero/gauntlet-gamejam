@@ -15,7 +15,7 @@ int main() {
     // Framerate per second
     SetTargetFPS(60); 
 
-    Background bg("assets/background.png", screenWidth, screenHeight, 10.0f);
+    Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos);
@@ -42,7 +42,8 @@ int main() {
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
-                wau = WauBulan(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
+                bg.Reset();
+                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 200.0f };
                 kid = SwingingKid(wau.pos);
                 obstacle.Reset(screenWidth);
             }

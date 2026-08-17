@@ -7,19 +7,26 @@ Background::Background(const char* imagePath, int screenWidth, int screenHeight,
     this->texture = LoadTexture(imagePath);
 
     // Maintain the aspect ratio
-    float scale = (float)screenWidth / (float)texture.width;
-    drawWidth = (float)texture.width * scale;
-    drawHeight = (float)texture.height * scale;
+    float zoomFactor = 1.6f;
+    float baseScale = (float)screenWidth / (float)texture.width;
+    float finalScale = baseScale * zoomFactor;
+    drawWidth = (float)texture.width * finalScale;
+    drawHeight = (float)texture.height * finalScale;
     
     // Center horizontally
     drawX = ((float)screenWidth - drawWidth) / 2.0f;
 
-    // Start at the bottom
-    scrollY = (float)screenHeight - drawHeight;
+    Reset();
 }
 
+// Scroll down
 void Background::Update(float dt) {
     scrollY += scrollSpeed * dt;
+}
+
+// Start from bottom
+void Background::Reset() {
+    scrollY = (float)screenHeight - drawHeight;
 }
 
 void Background::Draw() {
