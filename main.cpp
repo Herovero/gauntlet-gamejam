@@ -20,7 +20,7 @@ int main() {
     Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
-    SwingingKid kid(wau.pos);
+    SwingingKid kid(wau.pos, "assets/kid.png");
     ObstacleSpawner spawner(screenWidth, screenHeight);
 
     // Game State
@@ -45,7 +45,8 @@ int main() {
                 isGameOver = false;
                 bg.Reset();
                 wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
-                kid = SwingingKid(wau.pos);
+                kid.pos = { wau.pos.x, wau.pos.y + 120.0f };
+                kid.velocity = { 0.0f, 0.0f };
                 spawner.Reset();
             }
         }
@@ -71,6 +72,7 @@ int main() {
     }
 
     wau.Unload();
+    kid.Unload();
     bg.Unload();
     spawner.Unload();
     CloseWindow(); 
