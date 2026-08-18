@@ -9,7 +9,7 @@ CXXFLAGS := -Wall -Wextra -Werror -std=c++17
 LDLIBS   := -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 # List every .cpp file in the exercise here
-SRCS := main.cpp WauBulan.cpp SwingingKid.cpp FallingObstacle.cpp FlyingObstacle.cpp SwayingObstacle.cpp GapObstacle.cpp ObstacleSpawner.cpp CollisionManager.cpp Background.cpp
+SRCS := main.cpp WauBulan.cpp SwingingKid.cpp FallingObstacle.cpp FlyingObstacle.cpp SwayingObstacle.cpp GapObstacle.cpp ObstacleSpawner.cpp CollisionManager.cpp ScoreManager.cpp Background.cpp
 OBJS := $(SRCS:.cpp=.o)
 
 # `make` / `make all`: build the binary

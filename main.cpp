@@ -5,6 +5,7 @@
 #include "Background.hpp"
 #include "ObstacleSpawner.hpp"
 #include "CollisionManager.hpp"
+#include "ScoreManager.hpp"
 
 int main() {
     // Screen Initialization
@@ -22,6 +23,7 @@ int main() {
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos, "assets/kid.png", "assets/kid_falling.png");
     ObstacleSpawner spawner(screenWidth, screenHeight);
+    ScoreManager scoreManager;
 
     // Game State
     bool isGameOver = false;
@@ -33,9 +35,16 @@ int main() {
 
         if (!isGameOver){
             bg.Update(dt);
-            wau.Update(dt, screenWidth, screenHeight);
+
+            if (!kid.isDetached) {
+                wau.Update(dt, screenWidth, screenHeight);
+            } else {
+                wau.pos.y += 400.0f * dt; 
+            }
+
             kid.Update(dt, wau.pos);
             spawner.Update(dt);
+            scoreManager.Update(dt, kid.isDetached);
 
             // Check collisions only if the string is still attached
             if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
@@ -61,6 +70,7 @@ int main() {
                 kid.isDetached = false;
 
                 spawner.Reset();
+                scoreManager.Reset();
             }
         }
 
@@ -71,14 +81,13 @@ int main() {
 
             bg.Draw();
 
-            // Example: DrawText(text, x_position, y_position, font_size, color)
             if (!isGameOver){
                 wau.Draw();
                 kid.Draw(wau.pos);
                 spawner.Draw();
+                scoreManager.Draw();
             } else {
-                DrawText("GAME OVER", screenWidth / 2 - 110, screenHeight / 2 - 30, 40, RED);
-                DrawText("Press SPACE to Restart", screenWidth / 2 - 120, screenHeight / 2 + 20, 20, DARKGRAY);
+                scoreManager.DrawGameOver(screenWidth, screenHeight);
             }
 
         EndDrawing();
