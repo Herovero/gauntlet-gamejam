@@ -1,12 +1,25 @@
 #include "Obstacle.hpp"
+#include <cmath>
 
 Obstacle::Obstacle(int screenWidth, int screenHeight) {
     Reset(screenWidth, screenHeight);
 }
 
 void Obstacle::Update(float dt, int screenWidth, int screenHeight) {
-    rec.x += speedX * dt;
-    rec.y += speedY * dt;
+    if (type == TYPE_SWAYING) {
+        // Move down slowly
+        rec.y += speedY * dt;
+
+        // Sways left and right around its baseX using time and sine
+        float time = (float)GetTime();
+        float frequency = 3.0f;   // Sway speed
+        float amplitude = 120.0f; // Maximum distance swayed from center
+
+        rec.x = baseX + std::sin(time * frequency + swayOffset) * amplitude;
+    } else {
+        rec.x += speedX * dt;
+        rec.y += speedY * dt;
+    }
 
     if (type == TYPE_FALLING && rec.y > (float)screenHeight) {
         Reset(screenWidth, screenHeight);
@@ -17,10 +30,13 @@ void Obstacle::Update(float dt, int screenWidth, int screenHeight) {
     else if (type == TYPE_FLYING_RIGHT && rec.x > (float)screenWidth) {
         Reset(screenWidth, screenHeight);
     }
+    else if (type == TYPE_SWAYING && rec.y > (float)screenHeight) {
+        Reset(screenWidth, screenHeight);
+    }
 }
 
 void Obstacle::Reset(int screenWidth, int screenHeight) {
-    int randomType = GetRandomValue(0, 2);
+    int randomType = GetRandomValue(0, 3);
     
     // After obstacle reaches bottom, go back to the top and randomize x position
     if (randomType == 0) {
@@ -52,12 +68,33 @@ void Obstacle::Reset(int screenWidth, int screenHeight) {
         speedX = 250.0f;    // Flying right speed
         speedY = 0.0f;
     }
+    else if (randomType == 3) {
+        type = TYPE_SWAYING;
+        rec.width = 45.0f; 
+        rec.height = 45.0f;
+        
+        // Pick a center point that leaves room for the 120px sway radius
+        // Make object sway around 120px radius
+        baseX = (float)GetRandomValue(120, screenWidth - 120);
+        rec.x = baseX;
+        rec.y = -50.0f;    // Start from above
+        
+        speedX = 0.0f;
+        speedY = 100.0f;
+        
+        // Randomize sway
+        swayOffset = (float)GetRandomValue(0, 100);
+    }
 }
 
 void Obstacle::Draw() {
     if (type == TYPE_FALLING) {
-        DrawRectangleRec(rec, RED);  
-    } else {
+        DrawRectangleRec(rec, RED);
+    }
+    else if (type == TYPE_SWAYING) {
+        DrawRectangleRec(rec, PURPLE);
+    } 
+    else {
         DrawRectangleRec(rec, ORANGE); 
     }
 }

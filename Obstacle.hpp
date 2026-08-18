@@ -4,7 +4,8 @@
 enum ObstacleType {
     TYPE_FALLING,
     TYPE_FLYING_LEFT,
-    TYPE_FLYING_RIGHT 
+    TYPE_FLYING_RIGHT,
+    TYPE_SWAYING
 };
 
 class Obstacle {
@@ -13,6 +14,9 @@ public:
     float speedX;
     float speedY;
     ObstacleType type;
+
+    float baseX;      
+    float swayOffset;
 
     Obstacle(int screenWidth, int screenHeight); 
     void Update(float dt, int screenWidth, int screenHeight);
