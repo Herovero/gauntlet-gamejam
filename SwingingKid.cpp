@@ -1,7 +1,7 @@
 #include "SwingingKid.hpp"
 #include <cmath>
 
-SwingingKid::SwingingKid(Vector2 anchorPos, const char* imagePath) {
+SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath) {
     pos = { anchorPos.x, anchorPos.y + 120.0f };
     velocity = { 0.0f, 0.0f };
     radius = 20.0f;
@@ -9,7 +9,8 @@ SwingingKid::SwingingKid(Vector2 anchorPos, const char* imagePath) {
     gravity = 1200.0f;
     isDetached = false;
 
-    texture = LoadTexture(imagePath);
+    texture = LoadTexture(normalPath);
+    texFalling = LoadTexture(fallingPath);
 }
 
 void SwingingKid::Update(float dt, Vector2 anchorPos) {
@@ -57,18 +58,21 @@ void SwingingKid::Draw(Vector2 anchorPos) {
         DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
     }
 
-    if (texture.id > 0 && texture.width > 0) {
+    // Pick active texture based on state
+    Texture2D currentTex = (isDetached && texFalling.id > 0) ? texFalling : texture;
+
+    if (currentTex.id > 0 && currentTex.width > 0) {
         float renderWidth = radius * 2.5f;
-        float aspectRatio = (float)texture.height / (float)texture.width;
+        float aspectRatio = (float)currentTex.height / (float)currentTex.width;
         float renderHeight = renderWidth * aspectRatio;
 
-        Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+        Rectangle source = { 0.0f, 0.0f, (float)currentTex.width, (float)currentTex.height };
         Rectangle dest   = { visualPos.x, visualPos.y, renderWidth, renderHeight };
         Vector2 origin   = { renderWidth / 2.0f, renderHeight / 2.0f };
 
-        DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
+        DrawTexturePro(currentTex, source, dest, origin, 0.0f, WHITE);
     } else {
-        DrawCircleV(visualPos, radius, ORANGE);
+        DrawCircleV(visualPos, radius, isDetached ? RED : ORANGE);
     }
 
     // Collision Hitbox Debug
@@ -76,7 +80,6 @@ void SwingingKid::Draw(Vector2 anchorPos) {
 }
 
 void SwingingKid::Unload() {
-    if (texture.id > 0) {
-        UnloadTexture(texture);
-    }
+    if (texture.id > 0) UnloadTexture(texture);
+    if (texFalling.id > 0) UnloadTexture(texFalling);
 }
