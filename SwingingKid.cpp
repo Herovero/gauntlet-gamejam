@@ -43,6 +43,10 @@ void SwingingKid::Update(float dt, Vector2 anchorPos) {
 }
 
 void SwingingKid::Draw(Vector2 anchorPos) {
+    float offsetX = -15.0f;
+
+    Vector2 visualPos = { pos.x + offsetX, pos.y };
+
     // Draw string connecting kite to the kid's center
     DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
 
@@ -52,16 +56,16 @@ void SwingingKid::Draw(Vector2 anchorPos) {
         float renderHeight = renderWidth * aspectRatio;
 
         Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-        Rectangle dest   = { pos.x, pos.y, renderWidth, renderHeight };
+        Rectangle dest   = { visualPos.x, visualPos.y, renderWidth, renderHeight };
         Vector2 origin   = { renderWidth / 2.0f, renderHeight / 2.0f };
 
         DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
     } else {
-        DrawCircleV(pos, radius, ORANGE);
+        DrawCircleV(visualPos, radius, ORANGE);
     }
 
     // Collision Hitbox Debug
-    DrawCircleLines((int)pos.x, (int)pos.y, radius, GREEN);
+    //DrawCircleLines((int)visualPos.x, (int)visualPos.y, radius, GREEN);
 }
 
 void SwingingKid::Unload() {
