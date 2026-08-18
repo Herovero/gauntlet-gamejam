@@ -17,9 +17,9 @@ int main() {
 
     Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
 
-    WauBulan wau(screenWidth / 2.0f, screenHeight - 200.0f, "assets/waubulan.png");
+    WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos);
-    Obstacle obstacle(screenWidth);
+    Obstacle obstacle(screenWidth, screenHeight);
 
     // Game State
     bool isGameOver = false;
@@ -43,9 +43,9 @@ int main() {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
                 bg.Reset();
-                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 200.0f };
+                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
                 kid = SwingingKid(wau.pos);
-                obstacle.Reset(screenWidth);
+                obstacle.Reset(screenWidth, screenHeight);
             }
         }
 

@@ -5,7 +5,7 @@ SwingingKid::SwingingKid(Vector2 anchorPos) {
     pos = { anchorPos.x, anchorPos.y + 120.0f };
     velocity = { 0.0f, 0.0f };
     radius = 15.0f;
-    stringLength = 120.0f;
+    stringLength = 500.0f;
     gravity = 1200.0f;
 }
 
