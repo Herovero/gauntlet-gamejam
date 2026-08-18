@@ -11,6 +11,11 @@ bool CollisionManager::CheckPlayerCollisions(const WauBulan& wau, const Swinging
         if (CheckCollisionCircleRec(kid.pos, kid.radius, obs.rec)) {
             return true;
         }
+
+        if (obs.type == TYPE_GAP) {
+            if (CheckCollisionCircleRec(wau.pos, wau.radius, obs.rec2)) return true;
+            if (CheckCollisionCircleRec(kid.pos, kid.radius, obs.rec2)) return true;
+        }
     }
     return false;
 }
