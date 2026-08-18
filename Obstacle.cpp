@@ -28,7 +28,7 @@ void Obstacle::Reset(int screenWidth, int screenHeight) {
         rec.width = 150.0f;
         rec.height = 30.0f;
         rec.x = (float)GetRandomValue(0, screenWidth - (int)rec.width);
-        rec.y = -50.0f;      // Start above screen
+        rec.y = -50.0f;      // Start from above
         speedX = 0.0f;       
         speedY = 150.0f;     // Falling speed
     }
@@ -37,9 +37,9 @@ void Obstacle::Reset(int screenWidth, int screenHeight) {
         type = TYPE_FLYING_LEFT;
         rec.width = 60.0f;
         rec.height = 30.0f;
-        rec.x = (float)screenWidth + 50.0f;
+        rec.x = (float)screenWidth + 50.0f;  // Start from right
         rec.y = (float)GetRandomValue(50, screenHeight / 2);
-        speedX = -250.0f;    
+        speedX = -250.0f;    // Flying left speed
         speedY = 0.0f;
     }
     // After obstacle reaches right, go back to left and randomize y position
@@ -47,9 +47,9 @@ void Obstacle::Reset(int screenWidth, int screenHeight) {
         type = TYPE_FLYING_RIGHT;
         rec.width = 60.0f;
         rec.height = 30.0f;
-        rec.x = -50.0f;
+        rec.x = -50.0f;     // Start from right
         rec.y = (float)GetRandomValue(50, screenHeight / 2);
-        speedX = 250.0f;    
+        speedX = 250.0f;    // Flying right speed
         speedY = 0.0f;
     }
 }

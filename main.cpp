@@ -3,6 +3,7 @@
 #include "SwingingKid.hpp"
 #include "Obstacle.hpp"
 #include "Background.hpp"
+#include "ObstacleSpawner.hpp"
 
 int main() {
     // Screen Initialization
@@ -19,7 +20,7 @@ int main() {
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos);
-    Obstacle obstacle(screenWidth, screenHeight);
+    ObstacleSpawner spawner(screenWidth, screenHeight);
 
     // Game State
     bool isGameOver = false;
@@ -33,19 +34,14 @@ int main() {
             bg.Update(dt);
             wau.Update(dt, screenWidth, screenHeight);
             kid.Update(dt, wau.pos);
-            obstacle.Update(dt, screenWidth, screenHeight);
-
-            if (CheckCollisionCircleRec(wau.pos, wau.radius, obstacle.rec) ||
-                CheckCollisionCircleRec(kid.pos, kid.radius, obstacle.rec)) {
-                isGameOver = true;
-            }
+            spawner.Update(dt);
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
                 bg.Reset();
                 wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
                 kid = SwingingKid(wau.pos);
-                obstacle.Reset(screenWidth, screenHeight);
+                spawner.Reset();
             }
         }
 
@@ -60,7 +56,7 @@ int main() {
             if (!isGameOver){
                 wau.Draw();
                 kid.Draw(wau.pos);
-                obstacle.Draw();
+                spawner.Draw();
             } else {
                 DrawText("GAME OVER", screenWidth / 2 - 110, screenHeight / 2 - 30, 40, RED);
                 DrawText("Press SPACE to Restart", screenWidth / 2 - 120, screenHeight / 2 + 20, 20, DARKGRAY);
