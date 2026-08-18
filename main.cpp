@@ -37,7 +37,17 @@ int main() {
             kid.Update(dt, wau.pos);
             spawner.Update(dt);
 
-            if (CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+            // Check collisions only if the string is still attached
+            if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+                kid.isDetached = true;
+                
+                // Give the kid a little visual bump when hitting an obstacle to emphasize the impact
+                kid.velocity.y = -300.0f; 
+                kid.velocity.x = -150.0f; 
+            }
+
+            // Trigger the game over screen when the kid drops out of view
+            if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
                 isGameOver = true;
             }
         } else {
@@ -45,8 +55,11 @@ int main() {
                 isGameOver = false;
                 bg.Reset();
                 wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
+
                 kid.pos = { wau.pos.x, wau.pos.y + 120.0f };
                 kid.velocity = { 0.0f, 0.0f };
+                kid.isDetached = false;
+                
                 spawner.Reset();
             }
         }

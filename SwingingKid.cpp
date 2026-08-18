@@ -7,6 +7,7 @@ SwingingKid::SwingingKid(Vector2 anchorPos, const char* imagePath) {
     radius = 20.0f;
     stringLength = 500.0f;
     gravity = 1200.0f;
+    isDetached = false;
 
     texture = LoadTexture(imagePath);
 }
@@ -16,29 +17,33 @@ void SwingingKid::Update(float dt, Vector2 anchorPos) {
     velocity.y += gravity * dt;
 
     // Add air resistance to avoid swinging forever
-    velocity.x *= 0.99f;
-    velocity.y *= 0.99f;
+    if (!isDetached) {
+        velocity.x *= 0.99f;
+        velocity.y *= 0.99f;
+    }
 
     // Move based on velocity
     pos.x += velocity.x * dt;
     pos.y += velocity.y * dt;
 
-    // String constraint
-    float dx = pos.x - anchorPos.x;
-    float dy = pos.y - anchorPos.y;
-    float distance = std::sqrt(dx * dx + dy * dy);
+    if (!isDetached) {
+        // String constraint
+        float dx = pos.x - anchorPos.x;
+        float dy = pos.y - anchorPos.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
 
-    // If the player gets further than the string, pull them back
-    if (distance > stringLength) {
-        float dirX = dx / distance;
-        float dirY = dy / distance;
-        
-        pos.x = anchorPos.x + (dirX * stringLength);
-        pos.y = anchorPos.y + (dirY * stringLength);
-        
-        float dotProduct = (velocity.x * dirX) + (velocity.y * dirY);
-        velocity.x -= dotProduct * dirX;
-        velocity.y -= dotProduct * dirY;
+        // If the player gets further than the string, pull them back
+        if (distance > stringLength) {
+            float dirX = dx / distance;
+            float dirY = dy / distance;
+            
+            pos.x = anchorPos.x + (dirX * stringLength);
+            pos.y = anchorPos.y + (dirY * stringLength);
+            
+            float dotProduct = (velocity.x * dirX) + (velocity.y * dirY);
+            velocity.x -= dotProduct * dirX;
+            velocity.y -= dotProduct * dirY;
+        }
     }
 }
 
@@ -48,7 +53,9 @@ void SwingingKid::Draw(Vector2 anchorPos) {
     Vector2 visualPos = { pos.x + offsetX, pos.y };
 
     // Draw string connecting kite to the kid's center
-    DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
+    if (!isDetached) {
+        DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
+    }
 
     if (texture.id > 0 && texture.width > 0) {
         float renderWidth = radius * 2.5f;
