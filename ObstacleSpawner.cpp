@@ -63,13 +63,12 @@ void ObstacleSpawner::Draw() {
 }
 
 void ObstacleSpawner::Reset() {
-    obstacles.clear(); // This safely deletes all active smart pointers
+    obstacles.clear();
     difficultyTimer = 0.0f;
 
-    // Start with 3 standard falling obstacles
     for (int i = 0; i < 3; i++) {
         auto obs = std::make_unique<FallingObstacle>(screenWidth, texFalling);
-        obs->rec.y -= i * 250.0f;
+        obs->pos.y -= i * 250.0f;
         obstacles.push_back(std::move(obs));
     }
 }
