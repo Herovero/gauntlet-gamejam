@@ -24,9 +24,14 @@ void GapObstacle::Update(float dt) {
 }
 
 void GapObstacle::Draw() {
-    Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-    DrawTexturePro(texture, source, rec, { 0, 0 }, 0.0f, WHITE);
-    DrawTexturePro(texture, source, rec2, { 0, 0 }, 0.0f, WHITE);
+    if (texture.id > 0) {
+        Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+        DrawTexturePro(texture, source, rec, { 0, 0 }, 0.0f, WHITE);
+        DrawTexturePro(texture, source, rec2, { 0, 0 }, 0.0f, WHITE);
+    } else {
+        DrawRectangleRec(rec, DARKGRAY);
+        DrawRectangleRec(rec2, DARKGRAY);
+    }
 }
 
 bool GapObstacle::IsOffScreen(int /*screenWidth*/, int screenHeight) { return rec.y > screenHeight; }

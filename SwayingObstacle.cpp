@@ -18,8 +18,12 @@ void SwayingObstacle::Update(float dt) {
 }
 
 void SwayingObstacle::Draw() {
-    Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
-    DrawTexturePro(texture, source, rec, { 0, 0 }, 0.0f, WHITE);
+    if (texture.id > 0) {
+        Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+        DrawTexturePro(texture, source, rec, { 0, 0 }, 0.0f, WHITE);
+    } else {
+        DrawRectangleRec(rec, PURPLE);
+    }
 }
 
 bool SwayingObstacle::IsOffScreen(int /*screenWidth*/, int screenHeight) { return rec.y > screenHeight; }
