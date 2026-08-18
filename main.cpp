@@ -4,6 +4,7 @@
 #include "Obstacle.hpp"
 #include "Background.hpp"
 #include "ObstacleSpawner.hpp"
+#include "CollisionManager.hpp"
 
 int main() {
     // Screen Initialization
@@ -35,6 +36,10 @@ int main() {
             wau.Update(dt, screenWidth, screenHeight);
             kid.Update(dt, wau.pos);
             spawner.Update(dt);
+
+            if (CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+                isGameOver = true;
+            }
         } else {
             if (IsKeyPressed(KEY_SPACE)) {
                 isGameOver = false;
