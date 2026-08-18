@@ -8,6 +8,12 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
     this->maxObstacles = 12;
+
+    texFalling  = LoadTexture("assets/durian.png");
+    texFlying   = LoadTexture("assets/hornbill.png");
+    texSwaying  = LoadTexture("assets/leaf.png");
+    texGap      = LoadTexture("assets/steel_girder.png");
+
     Reset();
 }
 
@@ -23,12 +29,11 @@ void ObstacleSpawner::SpawnRandomObstacle() {
     int maxRandom = gapExists ? 3 : 4; 
     int randomType = GetRandomValue(0, maxRandom);
 
-    // Using std::make_unique to safely allocate memory for the child classes
-    if (randomType == 0) obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth));
-    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true));
-    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false));
-    else if (randomType == 3) obstacles.push_back(std::make_unique<SwayingObstacle>(screenWidth));
-    else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth));
+    if (randomType == 0)      obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
+    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlying));
+    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlying));
+    else if (randomType == 3) obstacles.push_back(std::make_unique<SwayingObstacle>(screenWidth, texSwaying));
+    else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
 }
 
 void ObstacleSpawner::Update(float dt) {
@@ -63,8 +68,15 @@ void ObstacleSpawner::Reset() {
 
     // Start with 3 standard falling obstacles
     for (int i = 0; i < 3; i++) {
-        auto obs = std::make_unique<FallingObstacle>(screenWidth);
+        auto obs = std::make_unique<FallingObstacle>(screenWidth, texFalling);
         obs->rec.y -= i * 250.0f;
         obstacles.push_back(std::move(obs));
     }
+}
+
+void ObstacleSpawner::Unload() {
+    UnloadTexture(texFalling);
+    UnloadTexture(texFlying);
+    UnloadTexture(texSwaying);
+    UnloadTexture(texGap);
 }

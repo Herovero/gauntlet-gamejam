@@ -12,11 +12,15 @@ public:
     int screenWidth;
     int screenHeight;
 
+    Texture2D texFalling;
+    Texture2D texFlying;
+    Texture2D texSwaying;
+    Texture2D texGap;
+
     ObstacleSpawner(int screenWidth, int screenHeight);
     void Update(float dt);
     void Draw();
     void Reset();
-    
-    // Helper function to handle creating the unique_ptrs
+    void Unload();
     void SpawnRandomObstacle();
 };

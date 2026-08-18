@@ -4,7 +4,9 @@
 class SwayingObstacle : public Obstacle {
 public:
     float speedY, baseX, swayOffset;
-    SwayingObstacle(int screenWidth);
+    Texture2D texture;
+
+    SwayingObstacle(int screenWidth, Texture2D tex);
     void Update(float dt) override;
     void Draw() override;
     bool IsOffScreen(int screenWidth, int screenHeight) override;

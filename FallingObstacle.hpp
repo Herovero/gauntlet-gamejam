@@ -4,7 +4,9 @@
 class FallingObstacle : public Obstacle {
 public:
     float speedY;
-    FallingObstacle(int screenWidth);
+    Texture2D texture;
+
+    FallingObstacle(int screenWidth, Texture2D tex);
     void Update(float dt) override;
     void Draw() override;
     bool IsOffScreen(int screenWidth, int screenHeight) override;

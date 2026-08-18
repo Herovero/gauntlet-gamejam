@@ -72,6 +72,7 @@ int main() {
 
     wau.Unload();
     bg.Unload();
+    spawner.Unload();
     CloseWindow(); 
 
     return 0;
