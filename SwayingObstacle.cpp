@@ -3,11 +3,19 @@
 
 SwayingObstacle::SwayingObstacle(int screenWidth, Texture2D tex) {
     texture = tex;
-    rec.width = 45.0f;
-    rec.height = 45.0f;
+
+    rec.width = 50.0f;
+
+    if (texture.id > 0 && texture.width > 0) {
+        float aspectRatio = (float)texture.height / (float)texture.width;
+        rec.height = rec.width * aspectRatio;
+    } else {
+        rec.height = 50.0f;
+    }
+
     baseX = (float)GetRandomValue(120, screenWidth - 120);
     rec.x = baseX;
-    rec.y = -50.0f;
+    rec.y = -rec.height;
     speedY = 100.0f;
     swayOffset = (float)GetRandomValue(0, 100);
 }

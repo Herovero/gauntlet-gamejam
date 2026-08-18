@@ -11,7 +11,7 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
 
     texFalling  = LoadTexture("assets/durian.png");
     texFlying   = LoadTexture("assets/hornbill.png");
-    texSwaying  = LoadTexture("assets/leaf.png");
+    texSwaying  = LoadTexture("assets/pandanleaves.png");
     texGap      = LoadTexture("assets/steel_girder.png");
 
     Reset();
