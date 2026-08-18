@@ -1,27 +1,19 @@
 #pragma once
 #include "raylib.h"
 
-enum ObstacleType {
-    TYPE_FALLING,
-    TYPE_FLYING_LEFT,
-    TYPE_FLYING_RIGHT,
-    TYPE_SWAYING,
-    TYPE_GAP
-};
-
 class Obstacle {
 public:
     Rectangle rec;
-    Rectangle rec2;
-    float speedX;
-    float speedY;
-    ObstacleType type;
+    
+    virtual ~Obstacle() = default; 
 
-    float baseX;      
-    float swayOffset;
-
-    Obstacle(int screenWidth, int screenHeight, bool allowGap); 
-    void Update(float dt, int screenWidth, int screenHeight, bool allowGap);
-    void Reset(int screenWidth, int screenHeight, bool allowGap);
-    void Draw();
+    virtual void Update(float dt) = 0;
+    virtual void Draw() = 0;
+    virtual bool IsOffScreen(int screenWidth, int screenHeight) = 0;
+    
+    virtual bool CheckCollision(Vector2 pos, float radius) {
+        return CheckCollisionCircleRec(pos, radius, rec);
+    }
+    
+    virtual bool IsGapType() { return false; }
 };

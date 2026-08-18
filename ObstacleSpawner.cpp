@@ -1,4 +1,8 @@
 #include "ObstacleSpawner.hpp"
+#include "FallingObstacle.hpp"
+#include "FlyingObstacle.hpp"
+#include "SwayingObstacle.hpp"
+#include "GapObstacle.hpp"
 
 ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
@@ -7,47 +11,60 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     Reset();
 }
 
-void ObstacleSpawner::Update(float dt) {
-    // Check if the gap current exists on screen
+void ObstacleSpawner::SpawnRandomObstacle() {
     bool gapExists = false;
     for (const auto& obs : obstacles) {
-        if (obs.type == TYPE_GAP) {
+        if (obs->IsGapType()) {
             gapExists = true;
             break;
         }
     }
 
-    // Difficulty Scaling
+    int maxRandom = gapExists ? 3 : 4; 
+    int randomType = GetRandomValue(0, maxRandom);
+
+    // Using std::make_unique to safely allocate memory for the child classes
+    if (randomType == 0) obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth));
+    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true));
+    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false));
+    else if (randomType == 3) obstacles.push_back(std::make_unique<SwayingObstacle>(screenWidth));
+    else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth));
+}
+
+void ObstacleSpawner::Update(float dt) {
     difficultyTimer += dt;
-    // Check if 8 second of gameplay has passed
-    // And check if the amount of obstacles doesn't exceed maximum
     if (difficultyTimer > 8.0f && obstacles.size() < (size_t)maxObstacles) {
         difficultyTimer = 0.0f;
-        // Construct a new obstacle object and add to end of vector list
-        obstacles.push_back(Obstacle(screenWidth, screenHeight, !gapExists));
+        SpawnRandomObstacle();
     }
 
-    // Loop through every obstacle element to update all active obstacles
-    for (auto& obs : obstacles) {
-        obs.Update(dt, screenWidth, screenHeight, !gapExists);
+    // Safely iterate through the vector. If an obstacle goes off screen, delete it and spawn a new one.
+    for (auto it = obstacles.begin(); it != obstacles.end(); ) {
+        (*it)->Update(dt);
+        
+        if ((*it)->IsOffScreen(screenWidth, screenHeight)) {
+            it = obstacles.erase(it); // Erase destroys the object from memory
+            SpawnRandomObstacle();    // Spawn a fresh one
+        } else {
+            ++it;
+        }
     }
 }
 
 void ObstacleSpawner::Draw() {
-    for (auto& obs : obstacles) {
-        obs.Draw();
+    for (const auto& obs : obstacles) {
+        obs->Draw();
     }
 }
 
 void ObstacleSpawner::Reset() {
-    obstacles.clear();
+    obstacles.clear(); // This safely deletes all active smart pointers
     difficultyTimer = 0.0f;
 
-    // Spawn the first 3 obstacles
+    // Start with 3 standard falling obstacles
     for (int i = 0; i < 3; i++) {
-        Obstacle obs(screenWidth, screenHeight, false);
-        // Differentiate their initial y position so they don't drop at the exact same time
-        obs.rec.y -= i * 250.0f; 
-        obstacles.push_back(obs);
+        auto obs = std::make_unique<FallingObstacle>(screenWidth);
+        obs->rec.y -= i * 250.0f;
+        obstacles.push_back(std::move(obs));
     }
 }
