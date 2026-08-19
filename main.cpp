@@ -93,8 +93,14 @@ int main() {
 
             // If the kid is falling, let the player click to create a new string and save him
             if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && scoreManager.stringCharges > 0) {
-                scoreManager.stringCharges--;
-                kid.isDetached = false;
+                // Get mouse position
+                Vector2 mousePos = GetMousePosition();
+
+                // Check if the click happened inside the Wau Bulan's hitbox
+                if (CheckCollisionPointCircle(mousePos, wau.pos, wau.radius * 2.0f)) {
+                    scoreManager.stringCharges--;
+                    kid.isDetached = false;
+                }
             }
 
             // Trigger the game over screen when the kid drops out of view
