@@ -7,7 +7,7 @@
 ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
-    this->maxObstacles = 8;
+    this->maxObstacles = 6;
 
     texFalling  = LoadTexture("assets/durian.png");
     texFlying   = LoadTexture("assets/hornbill.png");

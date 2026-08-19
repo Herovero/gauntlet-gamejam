@@ -55,6 +55,11 @@ int main() {
                 kid.velocity.x = -150.0f; 
             }
 
+            // If the kid is falling, let the player click to create a new string and save him
+            if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                kid.isDetached = false;
+            }
+
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
                 isGameOver = true;
