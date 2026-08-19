@@ -43,8 +43,8 @@ int main() {
             }
 
             kid.Update(dt, wau.pos);
-            spawner.Update(dt);
             scoreManager.Update(dt, kid.isDetached);
+            spawner.Update(dt, scoreManager.currentAltitude);
 
             // Check collisions only if the string is still attached
             if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {

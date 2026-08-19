@@ -18,9 +18,9 @@ public:
     Texture2D texGap;
 
     ObstacleSpawner(int screenWidth, int screenHeight);
-    void Update(float dt);
+    void Update(float dt, float currentAltitude);
     void Draw();
     void Reset();
     void Unload();
-    void SpawnRandomObstacle();
+    void SpawnRandomObstacle(float currentAltitude);
 };

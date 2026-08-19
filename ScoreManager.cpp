@@ -3,7 +3,7 @@
 ScoreManager::ScoreManager() {
     currentAltitude = 0.0f;
     highestAltitude = 0.0f;
-    climbRate = 1.0f;
+    climbRate = 2.0f;
 }
 
 void ScoreManager::Update(float dt, bool isDetached) {
