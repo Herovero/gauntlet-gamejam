@@ -8,6 +8,12 @@
 #include "ScoreManager.hpp"
 #include "ItemSpawner.hpp"
 
+enum GameState {
+    MENU,
+    PLAYING,
+    GAMEOVER
+};
+
 int main() {
     // Screen Initialization
     const int screenWidth = 1280;
@@ -22,7 +28,7 @@ int main() {
     Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
-    SwingingKid kid(wau.pos, "assets/kid.png", "assets/kid_falling.png");
+    SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_standing.png");
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
@@ -30,24 +36,33 @@ int main() {
     const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
-    // Game State
-    bool isGameOver = false;
+    // Initialize State Machine
+    GameState gameState = MENU;
+
+    // Set up the menu positions
+    kid.isOnGround = true;
+    kid.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 50.0f }; // Rest on ground
+    wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f }; // Hover in sky
 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
         float dt = GetFrameTime();
 
-        if (!isGameOver){
+        if (gameState == MENU) {
+            // In the menu wait for input, Background stays still
+            if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                gameState = PLAYING;
+                kid.isOnGround = false; // Turn on gravity and string physics
+            }
+        }
+        else if (gameState == PLAYING) {
             // Apply boost speed if active
             bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
             bg.Update(dt);
 
-            if (!kid.isDetached) {
-                wau.Update(dt, screenWidth, screenHeight);
-            } else {
-                wau.pos.y += 400.0f * dt; 
-            }
+            if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
+            else wau.pos.y += 400.0f * dt;
 
             kid.Update(dt, wau.pos);
             scoreManager.Update(dt, kid.isDetached);
@@ -84,11 +99,12 @@ int main() {
 
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
-                isGameOver = true;
+                gameState = GAMEOVER;
             }
-        } else {
+        }
+        else if (gameState == GAMEOVER) {
             if (IsKeyPressed(KEY_SPACE)) {
-                isGameOver = false;
+                gameState = MENU;
                 bg.Reset();
                 wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
 
@@ -99,6 +115,13 @@ int main() {
                 spawner.Reset();
                 itemSpawner.Reset();
                 scoreManager.Reset();
+
+                // Reset to main menu positions
+                kid.isDetached = false;
+                kid.isOnGround = true;
+                kid.velocity = { 0.0f, 0.0f };
+                kid.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 50.0f };
+                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
             }
         }
 
@@ -106,16 +129,25 @@ int main() {
         BeginDrawing();
             // Switch background color
             ClearBackground(SKYBLUE);
-
             bg.Draw();
 
-            if (!isGameOver){
+            if (gameState == MENU) {
+                wau.Draw();
+                kid.Draw(wau.pos);
+
+                const char* title = "WAU BULAN RISING";
+                const char* start = "Press SPACE to Take Off!";
+                DrawText(title, screenWidth / 2 - MeasureText(title, 60) / 2, screenHeight / 2 - 100, 60, DARKBLUE);
+                DrawText(start, screenWidth / 2 - MeasureText(start, 30) / 2, screenHeight / 2, 30, DARKGRAY);
+            }
+            else if (gameState == PLAYING) {
                 wau.Draw();
                 kid.Draw(wau.pos);
                 spawner.Draw();
                 itemSpawner.Draw();
                 scoreManager.Draw();
-            } else {
+            } 
+            else if (gameState == GAMEOVER) {
                 scoreManager.DrawGameOver(screenWidth, screenHeight);
             }
 

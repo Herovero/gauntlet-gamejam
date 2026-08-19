@@ -18,7 +18,7 @@ void BungaRaya::Draw() {
     if (!active) return;
 
     if (texture.id > 0) {
-        float renderWidth = radius * 2.0f;
+        float renderWidth = radius * 3.0f;
         float aspectRatio = (float)texture.height / (float)texture.width;
         float renderHeight = renderWidth * aspectRatio;
 

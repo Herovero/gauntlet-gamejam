@@ -1,19 +1,24 @@
 #include "SwingingKid.hpp"
 #include <cmath>
 
-SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath) {
+SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, const char* standingPath) {
     pos = { anchorPos.x, anchorPos.y + 120.0f };
     velocity = { 0.0f, 0.0f };
     radius = 20.0f;
     stringLength = 500.0f;
     gravity = 1200.0f;
     isDetached = false;
+    isOnGround = false;
 
     texture = LoadTexture(normalPath);
     texFalling = LoadTexture(fallingPath);
+    texStanding = LoadTexture(standingPath);
 }
 
 void SwingingKid::Update(float dt, Vector2 anchorPos) {
+    // Skip physics while on main menu
+    if (isOnGround) return;
+
     // Add gravity
     velocity.y += gravity * dt;
 
@@ -59,7 +64,9 @@ void SwingingKid::Draw(Vector2 anchorPos) {
     }
 
     // Pick active texture based on state
-    Texture2D currentTex = (isDetached && texFalling.id > 0) ? texFalling : texture;
+    Texture2D currentTex = texture;
+    if (isOnGround && texStanding.id > 0) currentTex = texStanding;
+    else if (isDetached && texFalling.id > 0) currentTex = texFalling;
 
     if (currentTex.id > 0 && currentTex.width > 0) {
         float renderWidth = radius * 2.5f;
@@ -82,4 +89,5 @@ void SwingingKid::Draw(Vector2 anchorPos) {
 void SwingingKid::Unload() {
     if (texture.id > 0) UnloadTexture(texture);
     if (texFalling.id > 0) UnloadTexture(texFalling);
+    if (texStanding.id > 0) UnloadTexture(texStanding);
 }
