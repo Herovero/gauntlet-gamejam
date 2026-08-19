@@ -6,6 +6,7 @@
 #include "ObstacleSpawner.hpp"
 #include "CollisionManager.hpp"
 #include "ScoreManager.hpp"
+#include "ItemSpawner.hpp"
 
 int main() {
     // Screen Initialization
@@ -23,7 +24,11 @@ int main() {
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos, "assets/kid.png", "assets/kid_falling.png");
     ObstacleSpawner spawner(screenWidth, screenHeight);
+    ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
+
+    const float NORMAL_BG_SPEED = 30.0f;
+    const float BOOST_BG_SPEED = 150.0f;
 
     // Game State
     bool isGameOver = false;
@@ -34,6 +39,8 @@ int main() {
         float dt = GetFrameTime();
 
         if (!isGameOver){
+            // Apply boost speed if active
+            bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
             bg.Update(dt);
 
             if (!kid.isDetached) {
@@ -45,8 +52,16 @@ int main() {
             kid.Update(dt, wau.pos);
             scoreManager.Update(dt, kid.isDetached);
             spawner.Update(dt, scoreManager.currentAltitude);
+            itemSpawner.Update(dt);
 
-            // Check collisions only if the string is still attached
+            // Check item collisions only if the string is still attached
+            if (!kid.isDetached) {
+                Vector2 kidHitboxPos = { kid.pos.x - 15.0f, kid.pos.y };
+                int boost = itemSpawner.CheckCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
+                scoreManager.currentAltitude += boost;
+            }
+
+            // Check obstacle collisions only if the string is still attached
             if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
                 kid.isDetached = true;
                 
@@ -75,6 +90,7 @@ int main() {
                 kid.isDetached = false;
 
                 spawner.Reset();
+                itemSpawner.Reset();
                 scoreManager.Reset();
             }
         }
@@ -90,6 +106,7 @@ int main() {
                 wau.Draw();
                 kid.Draw(wau.pos);
                 spawner.Draw();
+                itemSpawner.Draw();
                 scoreManager.Draw();
             } else {
                 scoreManager.DrawGameOver(screenWidth, screenHeight);
@@ -102,6 +119,7 @@ int main() {
     kid.Unload();
     bg.Unload();
     spawner.Unload();
+    itemSpawner.Unload();
     CloseWindow(); 
 
     return 0;

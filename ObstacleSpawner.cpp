@@ -29,17 +29,18 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
     // Build a pool of allowed obstacle types based on altitude
     std::vector<int> pool;
 
-    if (currentAltitude <= 50.0f) {
+    if (currentAltitude <= 100.0f) {
         pool.push_back(0); // Falling
     } 
-    else if (currentAltitude <= 100.0f) {
-        pool.push_back(0); // Swaying
-    }
-    else if (currentAltitude <= 150.f) {
+    else if (currentAltitude <= 200.0f) {
         pool.push_back(1); // Flying Left
         pool.push_back(2); // Flying Right
     }
-    else if (currentAltitude <= 200.0f) {
+    else if (currentAltitude <= 300.f) {
+        pool.push_back(1); // Flying Left
+        pool.push_back(2); // Flying Right
+    }
+    else if (currentAltitude <= 300.0f) {
         if (!gapExists) {
             pool.push_back(4); // Gap
         } else {
