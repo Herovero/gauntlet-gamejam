@@ -4,6 +4,7 @@ ScoreManager::ScoreManager() {
     currentAltitude = 0.0f;
     highestAltitude = 0.0f;
     climbRate = 5.0f;
+    stringCharges = 3;
 }
 
 void ScoreManager::Update(float dt, bool isDetached) {
@@ -19,9 +20,12 @@ void ScoreManager::Update(float dt, bool isDetached) {
 }
 
 void ScoreManager::Draw() {
-    // Draw current altitude at the top left during gameplay
+    // Draw current altitude at the top left
     const char* text = TextFormat("Altitude: %.0f m", currentAltitude);
     DrawText(text, 20, 20, 30, DARKGRAY);
+
+    // Draw remaining string
+    DrawText(TextFormat("Tali Tangsi: %d", stringCharges), 20, 60, 20, GOLD);
 }
 
 void ScoreManager::DrawGameOver(int screenWidth, int screenHeight) {
@@ -38,6 +42,6 @@ void ScoreManager::DrawGameOver(int screenWidth, int screenHeight) {
 }
 
 void ScoreManager::Reset() {
-    // Reset current score
     currentAltitude = 0.0f;
+    stringCharges = 3;
 }

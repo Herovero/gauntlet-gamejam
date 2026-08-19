@@ -57,8 +57,14 @@ int main() {
             // Check item collisions only if the string is still attached
             if (!kid.isDetached) {
                 Vector2 kidHitboxPos = { kid.pos.x - 15.0f, kid.pos.y };
-                int boost = itemSpawner.CheckCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                scoreManager.currentAltitude += boost;
+
+                // Collect Bunga Raya
+                int boost = itemSpawner.CheckBungaCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
+                scoreManager.currentAltitude += boost; 
+                
+                // Collect Tali Tangsi
+                int extraStrings = itemSpawner.CheckTangsiCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
+                scoreManager.stringCharges += extraStrings;
             }
 
             // Check obstacle collisions only if the string is still attached
@@ -71,7 +77,8 @@ int main() {
             }
 
             // If the kid is falling, let the player click to create a new string and save him
-            if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && scoreManager.stringCharges > 0) {
+                scoreManager.stringCharges--;
                 kid.isDetached = false;
             }
 

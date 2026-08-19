@@ -6,6 +6,7 @@ public:
     float currentAltitude;
     float highestAltitude;
     float climbRate;
+    int stringCharges;
 
     ScoreManager();
     void Update(float dt, bool isDetached);
