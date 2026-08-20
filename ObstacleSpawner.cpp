@@ -1,8 +1,8 @@
 #include "ObstacleSpawner.hpp"
 #include "FallingObstacle.hpp"
 #include "FlyingObstacle.hpp"
-#include "SwayingObstacle.hpp"
 #include "GapObstacle.hpp"
+#include "BouncingObstacle.hpp"
 
 ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
@@ -11,7 +11,7 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
 
     texFalling  = LoadTexture("assets/durian.png");
     texFlying   = LoadTexture("assets/hornbill.png");
-    texSwaying  = LoadTexture("assets/pandanleaves.png");
+    texSwaying  = LoadTexture("assets/gasing.png");
     texGap      = LoadTexture("assets/steelbeam.png");
 
     Reset();
@@ -41,8 +41,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
             pool.push_back(4); // Gap
         } else {
             // Fallback so the pool is never empty if a gap is already falling
-            pool.push_back(1); 
-            pool.push_back(2);
+            pool.push_back(3);
         }
     }
     else {
@@ -62,7 +61,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
     if (randomType == 0)      obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
     else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlying));
     else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlying));
-    else if (randomType == 3) obstacles.push_back(std::make_unique<SwayingObstacle>(screenWidth, texSwaying));
+    else if (randomType == 3) obstacles.push_back(std::make_unique<BouncingObstacle>(screenWidth, texSwaying));
     else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
 }
 

@@ -167,6 +167,11 @@ int main() {
                 wau.Draw();
                 kid.Draw(wau.pos);
 
+                // Semi transparent panel 
+                int panelWidth = 650;
+                int panelHeight = 200;
+                DrawRectangle(screenWidth / 2 - panelWidth / 2, screenHeight / 2 - 130, panelWidth, panelHeight, Fade(BLACK, 0.6f));
+
                 const char* title = "WAU BULAN RISING";
                 const char* start = "Press SPACE to Take Off!";
                 DrawText(title, screenWidth / 2 - MeasureText(title, 60) / 2, screenHeight / 2 - 100, 60, DARKBLUE);
