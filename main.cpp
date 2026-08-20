@@ -45,7 +45,7 @@ int main() {
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
 
-    const float NORMAL_BG_SPEED = 1000.0f;
+    const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
     // Initialize State Machine
