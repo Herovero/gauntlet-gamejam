@@ -104,7 +104,7 @@ int main() {
             }
 
             // Check obstacle collisions only if the string is still attached
-            if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+            if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
                 PlaySound(sfxHit);
                 kid.isDetached = true;
                 
@@ -122,6 +122,8 @@ int main() {
                 if (CheckCollisionPointCircle(mousePos, wau.pos, wau.radius * 3.0f)) {
                     scoreManager.stringCharges--;
                     kid.isDetached = false;
+
+                    wau.invincibleTimer = 2.0f;
                 }
             }
 

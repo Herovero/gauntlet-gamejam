@@ -12,7 +12,7 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     texFalling  = LoadTexture("assets/durian.png");
     texFlying   = LoadTexture("assets/hornbill.png");
     texSwaying  = LoadTexture("assets/pandanleaves.png");
-    texGap      = LoadTexture("assets/steel_girder.png");
+    texGap      = LoadTexture("assets/steelbeam.png");
 
     Reset();
 }
@@ -31,12 +31,13 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
 
     if (currentAltitude <= 200.0f) {
         pool.push_back(0); // Falling
+        pool.push_back(4); // Gap
     } 
     else if (currentAltitude <= 400.0f) {
         pool.push_back(1); // Flying Left
         pool.push_back(2); // Flying Right
     }
-    else if (currentAltitude <= 600.0f) {
+    else if (currentAltitude <= 650.0f) {
         if (!gapExists) {
             pool.push_back(4); // Gap
         } else {

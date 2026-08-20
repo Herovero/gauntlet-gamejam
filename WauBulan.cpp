@@ -5,6 +5,7 @@ WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     pos = { startX, startY };
     radius = 25.0f;
     speed = 250.0f;
+    invincibleTimer = 0.0f;
 
     texture = LoadTexture(texturePath);
     spriteWidth = 200.0f;
@@ -16,6 +17,10 @@ WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
 }
 
 void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
+    if (invincibleTimer > 0.0f) {
+        invincibleTimer -= dt;
+    }
+
     targetRotation = 0.0f;
     stretchFactor = 1.0f;
 
@@ -50,7 +55,16 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
 }
 
 void WauBulan::Draw() {
+    Color drawColor = WHITE;
+    
     float time = (float)GetTime();
+
+    if (invincibleTimer > 0.0f) {
+        // Flicker every 0.1 seconds
+        if ((int)(invincibleTimer * 10) % 2 == 0) {
+            drawColor = Fade(WHITE, 0.4f); // Make it 40% opaque
+        }
+    }
 
     // Wind Drft
     float windSway = std::sin(time * 4.0f) * 6.0f;

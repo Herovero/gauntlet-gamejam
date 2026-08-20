@@ -7,6 +7,7 @@ class WauBulan {
         Vector2 pos;
         float radius;
         float speed;
+        float invincibleTimer;
 
         // Sprite properties
         Texture2D texture;
