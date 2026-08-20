@@ -27,6 +27,12 @@ int main() {
     Music bgm = LoadMusicStream("assets/bgm.mp3");
     SetMusicVolume(bgm, 1.0f);
 
+    Sound sfxHit = LoadSound("assets/hit.wav");
+    SetSoundVolume(sfxHit, 0.8f);
+
+    Sound sfxItem = LoadSound("assets/pickup.wav");
+    SetSoundVolume(sfxItem, 0.9f);
+
     // Framerate per second
     SetTargetFPS(60); 
 
@@ -84,20 +90,27 @@ int main() {
 
                 // Collect Bunga Raya
                 int boost = itemSpawner.CheckBungaCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                scoreManager.currentAltitude += boost; 
+                if (boost > 0) {
+                    scoreManager.currentAltitude += boost;
+                    PlaySound(sfxItem);
+                }
                 
                 // Collect Tali Tangsi
                 int extraStrings = itemSpawner.CheckTangsiCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                scoreManager.stringCharges += extraStrings;
+                if (extraStrings > 0) {
+                    scoreManager.stringCharges += extraStrings;
+                    PlaySound(sfxItem);
+                }
             }
 
             // Check obstacle collisions only if the string is still attached
             if (!kid.isDetached && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+                PlaySound(sfxHit);
                 kid.isDetached = true;
                 
                 // Give the kid a little visual bump when hitting an obstacle to emphasize the impact
                 kid.velocity.y = -300.0f; 
-                kid.velocity.x = -150.0f; 
+                kid.velocity.x = -150.0f;
             }
 
             // If the kid is falling, let the player click to create a new string and save him
@@ -177,6 +190,8 @@ int main() {
     spawner.Unload();
     itemSpawner.Unload();
 
+    UnloadSound(sfxHit);
+    UnloadSound(sfxItem);
     UnloadMusicStream(bgm);
     CloseAudioDevice();
     CloseWindow(); 
