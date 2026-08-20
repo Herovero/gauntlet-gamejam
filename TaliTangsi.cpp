@@ -3,7 +3,7 @@
 TaliTangsi::TaliTangsi(int screenWidth, Texture2D tex) {
     texture = tex;
     radius = 20.0f; 
-    speedY = 150.0f;
+    speedY = (float)GetRandomValue(100, 180);
     active = true;
     
     pos.x = (float)GetRandomValue(100, screenWidth - 100);

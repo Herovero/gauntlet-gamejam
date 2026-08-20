@@ -15,12 +15,14 @@ FlyingObstacle::FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, 
 
     rec.y = (float)GetRandomValue(50, screenHeight / 2);
     
+    float baseSpeed = (float)GetRandomValue(160, 280);
+
     if (flyLeft) {
         rec.x = (float)screenWidth + 50.0f;
-        speedX = -250.0f;
+        speedX = -baseSpeed;
     } else {
         rec.x = -rec.width - 50.0f; 
-        speedX = 250.0f;
+        speedX = baseSpeed;
     }
 }
 

@@ -16,7 +16,7 @@ SwayingObstacle::SwayingObstacle(int screenWidth, Texture2D tex) {
     baseX = (float)GetRandomValue(120, screenWidth - 120);
     rec.x = baseX;
     rec.y = -rec.height;
-    speedY = 100.0f;
+    speedY = (float)GetRandomValue(120, 200);
     swayOffset = (float)GetRandomValue(0, 100);
 }
 

@@ -3,7 +3,7 @@
 BungaRaya::BungaRaya(int screenWidth, Texture2D tex) {
     texture = tex;
     radius = 25.0f;
-    speedY = 120.0f;
+    speedY = (float)GetRandomValue(100, 180);
     active = true;
     
     pos.x = (float)GetRandomValue(100, screenWidth - 100);
