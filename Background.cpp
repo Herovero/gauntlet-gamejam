@@ -21,7 +21,14 @@ Background::Background(const char* imagePath, int screenWidth, int screenHeight,
 
 // Scroll down
 void Background::Update(float dt) {
-    scrollY += scrollSpeed * dt;
+    if (scrollY < 0.0f) {
+        scrollY += scrollSpeed * dt;
+
+        // Clamp it to 0 so it doesn't keep scrolling past the moon
+        if (scrollY > 0.0f) {
+            scrollY = 0.0f;
+        }
+    }
 }
 
 // Start from bottom

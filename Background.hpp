@@ -6,6 +6,7 @@ public:
     Texture2D texture;
     float scrollY;
     float scrollSpeed;
+    bool IsAtTop() const { return scrollY >= 0.0f; }
 
     float drawWidth;
     float drawHeight;

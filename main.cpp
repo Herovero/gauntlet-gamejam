@@ -11,7 +11,8 @@
 enum GameState {
     MENU,
     PLAYING,
-    GAMEOVER
+    GAMEOVER,
+    VICTORY
 };
 
 int main() {
@@ -44,7 +45,7 @@ int main() {
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
 
-    const float NORMAL_BG_SPEED = 30.0f;
+    const float NORMAL_BG_SPEED = 1000.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
     // Initialize State Machine
@@ -133,8 +134,14 @@ int main() {
 
                 StopMusicStream(bgm);
             }
+
+            if (bg.IsAtTop()) {
+                gameState = VICTORY;
+
+                StopMusicStream(bgm);
+            }
         }
-        else if (gameState == GAMEOVER) {
+        else if (gameState == GAMEOVER || gameState == VICTORY) {
             if (IsKeyPressed(KEY_SPACE)) {
                 gameState = MENU;
                 bg.Reset();
@@ -186,6 +193,29 @@ int main() {
             } 
             else if (gameState == GAMEOVER) {
                 scoreManager.DrawGameOver(screenWidth, screenHeight);
+            }
+            else if (gameState == VICTORY) {
+                // Draw the game entities frozen in place
+                wau.Draw();
+                kid.Draw(wau.pos);
+                spawner.Draw();
+
+                // Draw the victory panel
+                int panelWidth = 550;
+                int panelHeight = 250;
+                int panelX = screenWidth / 2 - panelWidth / 2;
+                int panelY = screenHeight / 2 - 120;
+                
+                DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.7f));
+
+                const char* title = "MERDEKA!";
+                const char* subtitle = "You Reached the Top!";
+                const char* restartText = "Press SPACE to Play Again";
+
+                // Draw the text
+                DrawText(title, screenWidth / 2 - MeasureText(title, 60) / 2, screenHeight / 2 - 90, 60, GOLD);
+                DrawText(subtitle, screenWidth / 2 - MeasureText(subtitle, 30) / 2, screenHeight / 2 - 10, 30, RAYWHITE);
+                DrawText(restartText, screenWidth / 2 - MeasureText(restartText, 20) / 2, screenHeight / 2 + 70, 20, YELLOW);
             }
 
         EndDrawing();
