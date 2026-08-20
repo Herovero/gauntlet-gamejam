@@ -21,6 +21,11 @@ int main() {
 
     // Run the window and show title
     InitWindow(screenWidth, screenHeight, "Wau Bulan Endless Runner");
+    
+    // Initialize audio to load mp3
+    InitAudioDevice();
+    Music bgm = LoadMusicStream("assets/bgm.mp3");
+    SetMusicVolume(bgm, 1.0f);
 
     // Framerate per second
     SetTargetFPS(60); 
@@ -49,11 +54,15 @@ int main() {
     while (!WindowShouldClose()) { 
         float dt = GetFrameTime();
 
+        UpdateMusicStream(bgm);
+
         if (gameState == MENU) {
             // In the menu wait for input, Background stays still
             if (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 gameState = PLAYING;
                 kid.isOnGround = false; // Turn on gravity and string physics
+
+                PlayMusicStream(bgm);
             }
         }
         else if (gameState == PLAYING) {
@@ -97,7 +106,7 @@ int main() {
                 Vector2 mousePos = GetMousePosition();
 
                 // Check if the click happened inside the Wau Bulan's hitbox
-                if (CheckCollisionPointCircle(mousePos, wau.pos, wau.radius * 2.0f)) {
+                if (CheckCollisionPointCircle(mousePos, wau.pos, wau.radius * 3.0f)) {
                     scoreManager.stringCharges--;
                     kid.isDetached = false;
                 }
@@ -106,6 +115,8 @@ int main() {
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
                 gameState = GAMEOVER;
+
+                StopMusicStream(bgm);
             }
         }
         else if (gameState == GAMEOVER) {
@@ -165,6 +176,9 @@ int main() {
     bg.Unload();
     spawner.Unload();
     itemSpawner.Unload();
+
+    UnloadMusicStream(bgm);
+    CloseAudioDevice();
     CloseWindow(); 
 
     return 0;
