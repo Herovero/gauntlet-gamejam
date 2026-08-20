@@ -3,14 +3,16 @@
 ScoreManager::ScoreManager() {
     currentAltitude = 0.0f;
     highestAltitude = 0.0f;
-    climbRate = 5.0f;
+    baseClimbRate = 5.0f;
+    boostClimbRate = 15.0f;
     stringCharges = 3;
 }
 
-void ScoreManager::Update(float dt, bool isDetached) {
+void ScoreManager::Update(float dt, bool isDetached, bool isBoosted) {
     // Only increase score if the kid is still attached to the kite
     if (!isDetached) {
-        currentAltitude += climbRate * dt;
+        float activeRate = isBoosted ? boostClimbRate : baseClimbRate;
+        currentAltitude += activeRate * dt;
         
         // Continuously update the high score if we surpass it
         if (currentAltitude > highestAltitude) {
@@ -22,7 +24,7 @@ void ScoreManager::Update(float dt, bool isDetached) {
 void ScoreManager::Draw() {
     // Draw current altitude at the top left
     const char* text = TextFormat("Altitude: %.0f m", currentAltitude);
-    DrawText(text, 20, 20, 30, DARKGRAY);
+    DrawText(text, 20, 20, 30, BLUE);
 
     // Draw remaining string
     DrawText(TextFormat("Tali Tangsi: %d", stringCharges), 20, 60, 20, GOLD);

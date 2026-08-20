@@ -20,7 +20,7 @@ int main() {
     const int screenHeight = 720;
 
     // Run the window and show title
-    InitWindow(screenWidth, screenHeight, "Wau Bulan Endless Runner");
+    InitWindow(screenWidth, screenHeight, "Wau Bulan Rising");
     
     // Initialize audio to load mp3
     InitAudioDevice();
@@ -80,7 +80,7 @@ int main() {
             else wau.pos.y += 400.0f * dt;
 
             kid.Update(dt, wau.pos);
-            scoreManager.Update(dt, kid.isDetached);
+            scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
             spawner.Update(dt, scoreManager.currentAltitude);
             itemSpawner.Update(dt);
 

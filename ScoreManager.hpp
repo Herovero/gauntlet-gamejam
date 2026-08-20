@@ -5,11 +5,12 @@ class ScoreManager {
 public:
     float currentAltitude;
     float highestAltitude;
-    float climbRate;
+    float baseClimbRate;
+    float boostClimbRate;
     int stringCharges;
 
     ScoreManager();
-    void Update(float dt, bool isDetached);
+    void Update(float dt, bool isDetached, bool isBoosted);
     void Draw();
     void DrawGameOver(int screenWidth, int screenHeight);
     void Reset();

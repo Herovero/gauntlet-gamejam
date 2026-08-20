@@ -2,7 +2,7 @@
 
 GapObstacle::GapObstacle(int screenWidth, Texture2D tex) {
     texture = tex;
-    float gapWidth = 250.0f;
+    float gapWidth = 350.0f;
     float gapX = (float)GetRandomValue(50, screenWidth - (int)gapWidth - 50);
 
     rec.x = 0.0f;

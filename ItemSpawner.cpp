@@ -46,15 +46,17 @@ void ItemSpawner::Draw() {
 }
 
 int ItemSpawner::CheckBungaCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius) {
-    int altitudeBoost = 0;
+    bool collected = false;
     for (auto it = bungaItems.begin(); it != bungaItems.end(); ) {
         if ((*it)->CheckCollision(wauPos, wauRadius) || (*it)->CheckCollision(kidHitboxPos, kidRadius)) {
-            altitudeBoost += 50;
-            boostTimer = 5.0f;
+            boostTimer = 5.0f; // Start 5s boost window
+            collected = true;
             it = bungaItems.erase(it);
-        } else ++it;
+        } else {
+            ++it;
+        }
     }
-    return altitudeBoost;
+    return collected;
 }
 
 int ItemSpawner::CheckTangsiCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius) {
