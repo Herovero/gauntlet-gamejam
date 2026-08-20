@@ -54,8 +54,11 @@ void SwingingKid::Update(float dt, Vector2 anchorPos) {
 }
 
 void SwingingKid::Draw(Vector2 anchorPos) {
-    float offsetX = -15.0f;
+    // Determine horizontal facing direction based on anchor position
+    bool isSwingingLeft = (pos.x < anchorPos.x);
 
+    // Flip offset based on facing direction
+    float offsetX = isSwingingLeft ? -15.0f : 15.0f;
     Vector2 visualPos = { pos.x + offsetX, pos.y };
 
     // Draw string connecting kite to the kid's center
@@ -73,7 +76,11 @@ void SwingingKid::Draw(Vector2 anchorPos) {
         float aspectRatio = (float)currentTex.height / (float)currentTex.width;
         float renderHeight = renderWidth * aspectRatio;
 
-        Rectangle source = { 0.0f, 0.0f, (float)currentTex.width, (float)currentTex.height };
+        // Flip the texture depends on which anchor is the kid swinging toward
+        float sourceWidth = isSwingingLeft ? (float)currentTex.width : -(float)currentTex.width;
+
+        // Apply the dynamic sourceWidth
+        Rectangle source = { 0.0f, 0.0f, sourceWidth, (float)currentTex.height };
         Rectangle dest   = { visualPos.x, visualPos.y, renderWidth, renderHeight };
         Vector2 origin   = { renderWidth / 2.0f, renderHeight / 2.0f };
 

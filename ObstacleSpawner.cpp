@@ -32,7 +32,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
     if (currentAltitude <= 250.0f) {
         pool.push_back(0); // Falling
     } 
-    else if (currentAltitude <= 600.0f) {
+    else if (currentAltitude <= 550.0f) {
         pool.push_back(1); // Flying Left
         pool.push_back(2); // Flying Right
     }
@@ -40,7 +40,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
         if (!gapExists) {
             pool.push_back(4); // Gap
         } else {
-            // Fallback so the pool is never empty if a gap is already falling!
+            // Fallback so the pool is never empty if a gap is already falling
             pool.push_back(1); 
             pool.push_back(2);
         }
