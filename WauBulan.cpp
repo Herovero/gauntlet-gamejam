@@ -51,12 +51,13 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
         
     // Vertical boundaries
     if (pos.y < radius) pos.y = radius;
-    if (pos.y > screenHeight - radius) pos.y = screenHeight - radius;
+    float bottomLimit = (float)screenHeight - 300.0f;
+    if (pos.y > bottomLimit) pos.y = bottomLimit;
 }
 
 void WauBulan::Draw() {
     Color drawColor = WHITE;
-    
+
     float time = (float)GetTime();
 
     if (invincibleTimer > 0.0f) {

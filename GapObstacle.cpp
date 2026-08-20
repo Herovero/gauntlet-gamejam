@@ -8,14 +8,14 @@ GapObstacle::GapObstacle(int screenWidth, Texture2D tex) {
     rec.x = 0.0f;
     rec.y = -50.0f;
     rec.width = gapX;
-    rec.height = 40.0f;
+    rec.height = 80.0f;
 
     rec2.x = gapX + gapWidth;
     rec2.y = -50.0f;
     rec2.width = (float)screenWidth - rec2.x;
-    rec2.height = 40.0f;
+    rec2.height = 80.0f;
     
-    speedY = (float)GetRandomValue(110, 160);
+    speedY = 120;
 }
 
 void GapObstacle::Update(float dt) {

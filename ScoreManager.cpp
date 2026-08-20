@@ -4,7 +4,7 @@ ScoreManager::ScoreManager() {
     currentAltitude = 0.0f;
     highestAltitude = 0.0f;
     baseClimbRate = 5.0f;
-    boostClimbRate = 15.0f;
+    boostClimbRate = 25.0f;
     stringCharges = 3;
 }
 

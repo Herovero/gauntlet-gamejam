@@ -170,7 +170,7 @@ int main() {
                 const char* title = "WAU BULAN RISING";
                 const char* start = "Press SPACE to Take Off!";
                 DrawText(title, screenWidth / 2 - MeasureText(title, 60) / 2, screenHeight / 2 - 100, 60, DARKBLUE);
-                DrawText(start, screenWidth / 2 - MeasureText(start, 30) / 2, screenHeight / 2, 30, DARKGRAY);
+                DrawText(start, screenWidth / 2 - MeasureText(start, 30) / 2, screenHeight / 2, 30, YELLOW);
             }
             else if (gameState == PLAYING) {
                 wau.Draw();
