@@ -7,11 +7,10 @@ private:
     float speedY;
     int screenWidth;
 
-public:
     Vector2 pos;   
     float radius;  
     Texture2D texture;
-
+public:
     BouncingObstacle(int screenWidth, Texture2D tex);
     void Update(float dt) override;
     void Draw() override;

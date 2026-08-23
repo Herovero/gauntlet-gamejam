@@ -9,6 +9,7 @@ ItemSpawner::ItemSpawner(int screenWidth, int screenHeight) {
 }
 
 void ItemSpawner::Update(float dt) {
+    // 
     if (boostTimer > 0.0f) boostTimer -= dt;
 
     // Bunga Raya Spawning

@@ -77,7 +77,6 @@ void WauBulan::Draw() {
     // Combine idle and steering animation
     float finalRotation = rotation + windTilt;
 
-    //
     float currentWidth  = spriteWidth * (2.0f - stretchFactor);
     float currentHeight = spriteHeight * stretchFactor;
 

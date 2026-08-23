@@ -22,7 +22,15 @@ int main() {
 
     // Run the window and show title
     InitWindow(screenWidth, screenHeight, "Wau Bulan Rising");
-    
+
+    // Enable resizing and configure the window
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+
+    // Create a virtual canvas to draw the game logic at a fixed 1280x720
+    RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
+    // Set filter for smooth scaling
+    SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+
     // Initialize audio to load mp3
     InitAudioDevice();
     Music bgm = LoadMusicStream("assets/bgm.mp3");
@@ -59,6 +67,15 @@ int main() {
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
+        if (IsKeyPressed(KEY_F11)) {
+            ToggleFullscreen();
+        }
+
+        // We add scale offset to make sure left click mouse works
+        float scale = std::min((float)GetScreenWidth() / screenWidth, (float)GetScreenHeight() / screenHeight);
+        float offsetX = (GetScreenWidth() - ((float)screenWidth * scale)) * 0.5f;
+        float offsetY = (GetScreenHeight() - ((float)screenHeight * scale)) * 0.5f;
+        
         float dt = GetFrameTime();
 
         UpdateMusicStream(bgm);
@@ -116,14 +133,19 @@ int main() {
 
             // If the kid is falling, let the player click to create a new string and save him
             if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && scoreManager.stringCharges > 0) {
-                // Get mouse position
-                Vector2 mousePos = GetMousePosition();
+                // Get mouse position from original monitor
+                Vector2 rawMousePos = GetMousePosition();
+
+                // Translate to virtual game canvas
+                Vector2 virtualMousePos = { 
+                    (rawMousePos.x - offsetX) / scale, 
+                    (rawMousePos.y - offsetY) / scale 
+                };
 
                 // Check if the click happened inside the Wau Bulan's hitbox
-                if (CheckCollisionPointCircle(mousePos, wau.pos, wau.radius * 3.0f)) {
+                if (CheckCollisionPointCircle(virtualMousePos, wau.pos, wau.radius * 3.0f)) {
                     scoreManager.stringCharges--;
                     kid.isDetached = false;
-
                     wau.invincibleTimer = 2.0f;
                 }
             }
@@ -165,7 +187,7 @@ int main() {
         }
 
         // Drawing logic
-        BeginDrawing();
+        BeginTextureMode(target);
             // Switch background color
             ClearBackground(SKYBLUE);
             bg.Draw();
@@ -218,6 +240,18 @@ int main() {
                 DrawText(restartText, screenWidth / 2 - MeasureText(restartText, 20) / 2, screenHeight / 2 + 70, 20, YELLOW);
             }
 
+        EndTextureMode();
+
+        BeginDrawing();
+            ClearBackground(BLACK);
+
+            // Use the offset and scale we calculated at the top of the loop
+            DrawTexturePro(target.texture, 
+                { 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height },
+                { (GetScreenWidth() - ((float)screenWidth * scale)) * 0.5f, (GetScreenHeight() - ((float)screenHeight * scale)) * 0.5f,
+                  (float)screenWidth * scale, (float)screenHeight * scale }, 
+                { 0, 0 }, 0.0f, WHITE);
+        
         EndDrawing();
     }
 
@@ -230,6 +264,7 @@ int main() {
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
     UnloadMusicStream(bgm);
+    UnloadRenderTexture(target);
     CloseAudioDevice();
     CloseWindow(); 
 

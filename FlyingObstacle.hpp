@@ -2,11 +2,11 @@
 #include "Obstacle.hpp"
 
 class FlyingObstacle : public Obstacle {
-public:
+private:
     float speedX;
     bool flyingLeft;
     Texture2D texture;
-
+public:
     FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, Texture2D texture);
     void Update(float dt) override;
     void Draw() override;

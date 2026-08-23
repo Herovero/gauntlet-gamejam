@@ -40,6 +40,7 @@ void SwingingKid::Update(float dt, Vector2 anchorPos) {
 
         // If the player gets further than the string, pull them back
         if (distance > stringLength) {
+            // Calculate the angle of the string
             float dirX = dx / distance;
             float dirY = dy / distance;
             

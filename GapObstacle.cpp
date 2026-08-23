@@ -2,18 +2,21 @@
 
 GapObstacle::GapObstacle(int screenWidth, Texture2D tex) {
     texture = tex;
+    // Fixed horizontal width of gap
     float gapWidth = 350.0f;
+    
+    // Pick a random X coordinate for where the gap starts
     float gapX = (float)GetRandomValue(50, screenWidth - (int)gapWidth - 50);
 
-    rec.x = 0.0f;
-    rec.y = -50.0f;
-    rec.width = gapX;
+    rec.x = 0.0f; // Spawn the first beam from left screen border
+    rec.y = -50.0f; // Spawn the beam from above
+    rec.width = gapX; // The end width of left beam is the start of the gap
     rec.height = 80.0f;
 
-    rec2.x = gapX + gapWidth;
-    rec2.y = -50.0f;
-    rec2.width = (float)screenWidth - rec2.x;
-    rec2.height = 80.0f;
+    rec2.x = gapX + gapWidth; // Spawn the second beam after the end of the gap
+    rec2.y = -50.0f; // Spawn the beam from above
+    rec2.width = (float)screenWidth - rec2.x; // Extend the right beam's width until it reaches the right border
+    rec2.height = 80.0f; 
     
     speedY = 120;
 }
@@ -25,7 +28,11 @@ void GapObstacle::Update(float dt) {
 
 void GapObstacle::Draw() {
     if (texture.id > 0) {
+        // Define the source rectangle using the entire original image dimensions
         Rectangle source = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+        // rec = screen position
+        // { 0, 0 } = pivot point for rotation/scaling
+        // 0.0f = rotation angle
         DrawTexturePro(texture, source, rec, { 0, 0 }, 0.0f, WHITE);
         DrawTexturePro(texture, source, rec2, { 0, 0 }, 0.0f, WHITE);
     } else {
