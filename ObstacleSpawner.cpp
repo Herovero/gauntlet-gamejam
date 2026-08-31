@@ -66,7 +66,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
 }
 
 void ObstacleSpawner::Update(float dt, float currentAltitude) {
-    if (currentAltitude >= 550 || currentAltitude <= 800.0f) {
+    if (currentAltitude >= 550 && currentAltitude <= 800.0f) {
         maxObstacles = 4; // Keep the screen less crowded early on
     } else {
         maxObstacles = 6; // Ramp it up to max capacity for Endless Mode

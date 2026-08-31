@@ -3,6 +3,10 @@ game
 *.exe
 *.out
 *.app
+*.html
+*.js
+*.wasm
+*.data
 
 # Object and archive files
 *.o
@@ -23,3 +27,5 @@ Thumbs.db
 
 # In case you clone/keep the raylib source folder in the project root
 raylib/
+raylib_win/
+raylib_web/
