@@ -7,7 +7,8 @@ Background::Background(const char* imagePath, int screenWidth, int screenHeight,
     this->texture = LoadTexture(imagePath);
 
     // Maintain the aspect ratio
-    float zoomFactor = 2.5f;
+    //float zoomFactor = 2.5f;
+    float zoomFactor = 1.0f;
     float baseScale = (float)screenWidth / (float)texture.width;
     float finalScale = baseScale * zoomFactor;
     drawWidth = (float)texture.width * finalScale;

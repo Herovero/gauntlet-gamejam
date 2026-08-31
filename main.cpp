@@ -45,7 +45,7 @@ int main() {
     // Framerate per second
     SetTargetFPS(60); 
 
-    Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
+    Background bg("assets/background2.png", screenWidth, screenHeight, 30.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_standing.png");
@@ -128,7 +128,7 @@ int main() {
                 
                 // Give the kid a little visual bump when hitting an obstacle to emphasize the impact
                 kid.velocity.y = -300.0f; 
-                kid.velocity.x = -150.0f;
+                kid.velocity.x = (kid.pos.x < wau.pos.x) ? -150.0f : 150.0f;
             }
 
             // If the kid is falling, let the player click to create a new string and save him

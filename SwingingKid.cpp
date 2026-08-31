@@ -62,6 +62,17 @@ void SwingingKid::Draw(Vector2 anchorPos) {
     float offsetX = isSwingingLeft ? -15.0f : 15.0f;
     Vector2 visualPos = { pos.x + offsetX, pos.y };
 
+    // Calculate rotation based on the string angle
+    float rotation = 0.0f;
+    if (!isDetached && !isOnGround) {
+        float dx = pos.x - anchorPos.x;
+        float dy = pos.y - anchorPos.y;
+        
+        // atan2 calculates the angle in radians
+        // convert to degrees and subtract 90 so straight down equals 0 rotation.
+        rotation = (std::atan2(dy, dx) * (180.0f / 3.14159265f)) - 90.0f;
+    }
+
     // Draw string connecting kite to the kid's center
     if (!isDetached) {
         DrawLineEx(anchorPos, pos, 2.0f, RAYWHITE);
@@ -85,7 +96,7 @@ void SwingingKid::Draw(Vector2 anchorPos) {
         Rectangle dest   = { visualPos.x, visualPos.y, renderWidth, renderHeight };
         Vector2 origin   = { renderWidth / 2.0f, renderHeight / 2.0f };
 
-        DrawTexturePro(currentTex, source, dest, origin, 0.0f, WHITE);
+        DrawTexturePro(currentTex, source, dest, origin, rotation, WHITE);
     } else {
         DrawCircleV(visualPos, radius, isDetached ? RED : ORANGE);
     }
