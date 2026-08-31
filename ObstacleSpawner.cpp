@@ -17,7 +17,7 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     Reset();
 }
 
-void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
+void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed) {
     bool gapExists = false;
     for (const auto& obs : obstacles) {
         if (obs->IsGapType()) {
@@ -59,13 +59,13 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude) {
 
     // Spawn the chosen obstacle
     if (randomType == 0)      obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
-    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlying));
-    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlying));
+    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlying, bgSpeed));
+    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlying, bgSpeed));
     else if (randomType == 3) obstacles.push_back(std::make_unique<BouncingObstacle>(screenWidth, texSwaying));
     else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
 }
 
-void ObstacleSpawner::Update(float dt, float currentAltitude) {
+void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed) {
     if (currentAltitude >= 550 && currentAltitude <= 800.0f) {
         maxObstacles = 4; // Keep the screen less crowded early on
     } else {
@@ -75,13 +75,14 @@ void ObstacleSpawner::Update(float dt, float currentAltitude) {
     difficultyTimer += dt;
     if (difficultyTimer > 8.0f && obstacles.size() < (size_t)maxObstacles) {
         difficultyTimer = 0.0f;
-        SpawnRandomObstacle(currentAltitude);
+        SpawnRandomObstacle(currentAltitude, bgSpeed);
     }
 
     int obstaclesToReplace = 0;
 
     // Safely iterate through the vector. If an obstacle goes off screen, delete it and spawn a new one.
     for (auto it = obstacles.begin(); it != obstacles.end(); ) {
+        (*it)->SyncBackgroundSpeed(bgSpeed);
         (*it)->Update(dt);
         
         if ((*it)->IsOffScreen(screenWidth, screenHeight)) {
@@ -93,7 +94,7 @@ void ObstacleSpawner::Update(float dt, float currentAltitude) {
     }
 
     for (int i = 0; i < obstaclesToReplace; i++) {
-        SpawnRandomObstacle(currentAltitude); // Pass it here
+        SpawnRandomObstacle(currentAltitude, bgSpeed);
     }
 }
 

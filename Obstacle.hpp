@@ -10,6 +10,7 @@ public:
     virtual void Update(float dt) = 0;
     virtual void Draw() = 0;
     virtual bool IsOffScreen(int screenWidth, int screenHeight) = 0;
+    virtual void SyncBackgroundSpeed(float) {}
     
     virtual bool CheckCollision(Vector2 pos, float radius) {
         return CheckCollisionCircleRec(pos, radius, rec);

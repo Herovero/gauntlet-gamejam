@@ -1,8 +1,9 @@
 #include "FlyingObstacle.hpp"
 
-FlyingObstacle::FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, Texture2D tex) {
+FlyingObstacle::FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, Texture2D tex, float bgSpeed) {
     this->flyingLeft = flyLeft;
     this->texture = tex;
+    this->speedY = bgSpeed;
 
     rec.width = 120.0f;
 
@@ -26,7 +27,10 @@ FlyingObstacle::FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, 
     }
 }
 
-void FlyingObstacle::Update(float dt) { rec.x += speedX * dt; }
+void FlyingObstacle::Update(float dt) { 
+    rec.x += speedX * dt; 
+    rec.y += speedY * dt;
+}
 
 void FlyingObstacle::Draw() {
     if (texture.id > 0) {
@@ -41,4 +45,8 @@ void FlyingObstacle::Draw() {
 bool FlyingObstacle::IsOffScreen(int screenWidth, int /*screenHeight*/) {
     if (flyingLeft) return rec.x + rec.width < 0.0f;
     return rec.x > screenWidth;
+}
+
+void FlyingObstacle::SyncBackgroundSpeed(float bgSpeed) {
+    this->speedY = bgSpeed;
 }

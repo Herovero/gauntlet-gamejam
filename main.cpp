@@ -99,7 +99,7 @@ int main() {
 
             kid.Update(dt, wau.pos);
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
-            spawner.Update(dt, scoreManager.currentAltitude);
+            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
             itemSpawner.Update(dt);
 
             // Check item collisions only if the string is still attached
