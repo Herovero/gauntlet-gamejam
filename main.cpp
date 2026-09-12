@@ -9,6 +9,7 @@
 #include "CoinManager.hpp"
 #include "ItemSpawner.hpp"
 #include "WindForce.hpp"
+#include "KipasSatay.hpp"
 
 enum GameState {
     MENU,
@@ -56,6 +57,7 @@ int main() {
     ScoreManager scoreManager;
     CoinManager coinManager;
     WindForce wind;
+    KipasSatay kipas;
 
     const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
@@ -102,6 +104,7 @@ int main() {
             else wau.pos.y += 400.0f * dt;
 
             wind.Update(dt);
+            kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft());
             kid.Update(dt, wau.pos, wind.GetForce());
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
             spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
@@ -190,6 +193,7 @@ int main() {
                 scoreManager.Reset();
                 coinManager.Reset();
                 wind.Reset();
+                kipas.Reset();
 
                 // Reset to main menu positions
                 kid.isDetached = false;
@@ -223,6 +227,7 @@ int main() {
             else if (gameState == PLAYING) {
                 wau.Draw();
                 wind.Draw(screenWidth);
+                kipas.Draw(screenHeight, wind.IsActive(), wind.IsWindFromLeft());
                 kid.Draw(wau.pos);
                 spawner.Draw();
                 itemSpawner.Draw();
@@ -276,6 +281,7 @@ int main() {
     bg.Unload();
     spawner.Unload();
     itemSpawner.Unload();
+    kipas.Unload();
 
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);

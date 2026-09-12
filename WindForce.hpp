@@ -13,4 +13,7 @@ public:
     void Draw(int screenWidth);
     float GetForce() const;
     void Reset();
+
+    bool IsActive() const { return activeWindTimer > 0.0f; }
+    bool IsWindFromLeft() const { return targetWindForce > 0.0f; }
 };
