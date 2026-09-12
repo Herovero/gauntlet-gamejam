@@ -5,6 +5,7 @@ ItemSpawner::ItemSpawner(int screenWidth, int screenHeight) {
     this->screenHeight = screenHeight;
     texBungaRaya = LoadTexture("assets/bungaraya.png");
     texTangsi = LoadTexture("assets/talitangsi.png");
+    texCoin = LoadTexture("assets/coin.png");
     Reset();
 }
 
@@ -14,16 +15,23 @@ void ItemSpawner::Update(float dt) {
 
     // Bunga Raya Spawning
     bungaSpawnTimer += dt;
-    if (bungaSpawnTimer > 10.0f) {
+    if (bungaSpawnTimer > 15.0f) {
         bungaSpawnTimer = 0.0f;
         bungaItems.push_back(std::make_unique<BungaRaya>(screenWidth, texBungaRaya));
     }
 
     // Tali Tangsi Spawning
     tangsiSpawnTimer += dt;
-    if (tangsiSpawnTimer > 20.0f) {
+    if (tangsiSpawnTimer > 15.0f) {
         tangsiSpawnTimer = 0.0f;
         tangsiItems.push_back(std::make_unique<TaliTangsi>(screenWidth, texTangsi));
+    }
+
+    // Coin Spawning
+    coinSpawnTimer += dt;
+    if (coinSpawnTimer > 2.5f) {
+        coinSpawnTimer = 0.0f;
+        coinItems.push_back(std::make_unique<Coin>(screenWidth, texCoin));
     }
 
     // Update Bunga Raya
@@ -39,11 +47,19 @@ void ItemSpawner::Update(float dt) {
         if ((*it)->pos.y > screenHeight + (*it)->radius) it = tangsiItems.erase(it);
         else ++it;
     }
+
+    // Update Coin
+    for (auto it = coinItems.begin(); it != coinItems.end(); ) {
+        (*it)->Update(dt);
+        if ((*it)->pos.y > screenHeight + (*it)->radius) it = coinItems.erase(it);
+        else ++it;
+    }
 }
 
 void ItemSpawner::Draw() {
     for (const auto& item : bungaItems) item->Draw();
     for (const auto& item : tangsiItems) item->Draw();
+    for (const auto& item : coinItems) item->Draw();
 }
 
 int ItemSpawner::CheckBungaCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius) {
@@ -71,6 +87,17 @@ int ItemSpawner::CheckTangsiCollisions(Vector2 wauPos, float wauRadius, Vector2 
     return tangsiCollected;
 }
 
+int ItemSpawner::CheckCoinCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius) {
+    int coinsCollected = 0;
+    for (auto it = coinItems.begin(); it != coinItems.end(); ) {
+        if ((*it)->CheckCollision(wauPos, wauRadius) || (*it)->CheckCollision(kidHitboxPos, kidRadius)) {
+            coinsCollected += 1;
+            it = coinItems.erase(it);
+        } else ++it;
+    }
+    return coinsCollected;
+}
+
 bool ItemSpawner::IsBoostActive() const {
     return boostTimer > 0.0f;
 }
@@ -78,12 +105,15 @@ bool ItemSpawner::IsBoostActive() const {
 void ItemSpawner::Reset() {
     bungaItems.clear();
     tangsiItems.clear();
+    coinItems.clear();
     bungaSpawnTimer = 0.0f;
     tangsiSpawnTimer = 0.0f;
+    coinSpawnTimer = 0.0f;
     boostTimer = 0.0f;
 }
 
 void ItemSpawner::Unload() {
     UnloadTexture(texBungaRaya);
     UnloadTexture(texTangsi);
+    UnloadTexture(texCoin);
 }

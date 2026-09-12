@@ -6,6 +6,7 @@
 #include "ObstacleSpawner.hpp"
 #include "CollisionManager.hpp"
 #include "ScoreManager.hpp"
+#include "CoinManager.hpp"
 #include "ItemSpawner.hpp"
 
 enum GameState {
@@ -52,6 +53,7 @@ int main() {
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
+    CoinManager coinManager;
 
     const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
@@ -119,6 +121,13 @@ int main() {
                     scoreManager.stringCharges += extraStrings;
                     PlaySound(sfxItem);
                 }
+                
+                // Collect Coins
+                int collectedCoins = itemSpawner.CheckCoinCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
+                if (collectedCoins > 0) {
+                    coinManager.AddCoins(collectedCoins);
+                    PlaySound(sfxItem);
+                }
             }
 
             // Check obstacle collisions only if the string is still attached
@@ -176,6 +185,7 @@ int main() {
                 spawner.Reset();
                 itemSpawner.Reset();
                 scoreManager.Reset();
+                coinManager.Reset();
 
                 // Reset to main menu positions
                 kid.isDetached = false;
@@ -212,6 +222,7 @@ int main() {
                 spawner.Draw();
                 itemSpawner.Draw();
                 scoreManager.Draw();
+                coinManager.Draw(screenWidth);
             } 
             else if (gameState == GAMEOVER) {
                 scoreManager.DrawGameOver(screenWidth, screenHeight);
