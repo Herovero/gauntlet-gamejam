@@ -23,15 +23,18 @@ SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* 
     SetTextureFilter(texStanding, TEXTURE_FILTER_TRILINEAR);
 }
 
-void SwingingKid::Update(float dt, Vector2 anchorPos) {
+void SwingingKid::Update(float dt, Vector2 anchorPos, float windForce) {
     // Skip physics while on main menu
     if (isOnGround) return;
 
     // Add gravity
     velocity.y += gravity * dt;
 
-    // Add air resistance to avoid swinging forever
     if (!isDetached) {
+        // Add wind force
+        velocity.x += windForce * dt;
+        
+        // Add air resistance to avoid swinging forever
         velocity.x *= 0.99f;
         velocity.y *= 0.99f;
     }

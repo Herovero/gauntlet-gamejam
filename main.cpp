@@ -8,6 +8,7 @@
 #include "ScoreManager.hpp"
 #include "CoinManager.hpp"
 #include "ItemSpawner.hpp"
+#include "WindForce.hpp"
 
 enum GameState {
     MENU,
@@ -54,6 +55,7 @@ int main() {
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
     CoinManager coinManager;
+    WindForce wind;
 
     const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
@@ -99,7 +101,8 @@ int main() {
             if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
             else wau.pos.y += 400.0f * dt;
 
-            kid.Update(dt, wau.pos);
+            wind.Update(dt);
+            kid.Update(dt, wau.pos, wind.GetForce());
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
             spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
             itemSpawner.Update(dt);
@@ -186,6 +189,7 @@ int main() {
                 itemSpawner.Reset();
                 scoreManager.Reset();
                 coinManager.Reset();
+                wind.Reset();
 
                 // Reset to main menu positions
                 kid.isDetached = false;
@@ -218,6 +222,7 @@ int main() {
             }
             else if (gameState == PLAYING) {
                 wau.Draw();
+                wind.Draw(screenWidth);
                 kid.Draw(wau.pos);
                 spawner.Draw();
                 itemSpawner.Draw();

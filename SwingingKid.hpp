@@ -17,7 +17,7 @@ class SwingingKid {
         bool isOnGround;
 
         SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, const char* standingPath);
-        void Update(float dt, Vector2 anchorPos);
+        void Update(float dt, Vector2 anchorPos, float windForce);
         void Draw(Vector2 anchorPos);
         void Unload();
 };
