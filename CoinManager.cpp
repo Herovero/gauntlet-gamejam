@@ -25,7 +25,7 @@ void CoinManager::Draw(int screenWidth) {
 
     if (uiCoinIcon.id > 0) {
         // Draw the coin icon next to the text
-        float renderSize = 35.0f;
+        float renderSize = 70.0f;
         Rectangle source = { 0.0f, 0.0f, (float)uiCoinIcon.width, (float)uiCoinIcon.height };
         Rectangle dest = { xPos, yPos, renderSize, renderSize };
         DrawTexturePro(uiCoinIcon, source, dest, { 0.0f, 0.0f }, 0.0f, WHITE);
@@ -34,7 +34,7 @@ void CoinManager::Draw(int screenWidth) {
     }
 
     // Draw the actual coin amount
-    DrawText(coinText.c_str(), (int)xPos + 45, (int)yPos + 8, 24, GOLD);
+    DrawText(coinText.c_str(), (int)xPos + 90, (int)yPos + 20, 24, GOLD);
 }
 
 void CoinManager::DrawGameOver(int screenWidth, int screenHeight) {

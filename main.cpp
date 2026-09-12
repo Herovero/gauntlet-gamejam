@@ -30,7 +30,7 @@ int main() {
     // Create a virtual canvas to draw the game logic at a fixed 1280x720
     RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
     // Set filter for smooth scaling
-    SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(target.texture, TEXTURE_FILTER_POINT);
 
     // Initialize audio to load mp3
     InitAudioDevice();
