@@ -13,7 +13,7 @@ public:
     int screenHeight;
 
     Texture2D texFalling;
-    Texture2D texFlying;
+    std::vector<Texture2D> texFlyingFrames;
     Texture2D texSwaying;
     Texture2D texGap;
 

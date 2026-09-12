@@ -10,9 +10,19 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->maxObstacles = 6;
 
     texFalling  = LoadTexture("assets/durian.png");
-    texFlying   = LoadTexture("assets/hornbill.png");
     texSwaying  = LoadTexture("assets/gasing.png");
     texGap      = LoadTexture("assets/steelbeam.png");
+
+    for (int i = 0; i < 12; i++) {
+        // TextFormat automatically injects the number into the string
+        const char* fileName = TextFormat("assets/Hornbill/hornbill_%d.png", i);
+        Texture2D frame = LoadTexture(fileName);
+        
+        GenTextureMipmaps(&frame);
+        SetTextureFilter(frame, TEXTURE_FILTER_TRILINEAR);
+        
+        texFlyingFrames.push_back(frame);
+    }
 
     Reset();
 }
@@ -59,8 +69,8 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed) 
 
     // Spawn the chosen obstacle
     if (randomType == 0)      obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
-    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlying, bgSpeed));
-    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlying, bgSpeed));
+    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlyingFrames, bgSpeed));
+    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlyingFrames, bgSpeed));
     else if (randomType == 3) obstacles.push_back(std::make_unique<BouncingObstacle>(screenWidth, texSwaying));
     else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
 }
@@ -117,7 +127,10 @@ void ObstacleSpawner::Reset() {
 
 void ObstacleSpawner::Unload() {
     UnloadTexture(texFalling);
-    UnloadTexture(texFlying);
     UnloadTexture(texSwaying);
     UnloadTexture(texGap);
+
+    for (auto& frame : texFlyingFrames) {
+        UnloadTexture(frame);
+    }
 }
