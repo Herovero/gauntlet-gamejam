@@ -13,6 +13,14 @@ SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* 
     texture = LoadTexture(normalPath);
     texFalling = LoadTexture(fallingPath);
     texStanding = LoadTexture(standingPath);
+
+    GenTextureMipmaps(&texture);
+    GenTextureMipmaps(&texFalling);
+    GenTextureMipmaps(&texStanding);
+
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(texFalling, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(texStanding, TEXTURE_FILTER_TRILINEAR);
 }
 
 void SwingingKid::Update(float dt, Vector2 anchorPos) {

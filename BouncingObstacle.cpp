@@ -17,6 +17,9 @@ BouncingObstacle::BouncingObstacle(int screenWidth, Texture2D tex) {
     if (GetRandomValue(0, 1) == 0) {
         speedX = -speedX;
     }
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void BouncingObstacle::Update(float dt) {

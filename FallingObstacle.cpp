@@ -12,6 +12,9 @@ FallingObstacle::FallingObstacle(int screenWidth, Texture2D tex) {
     pos.x = (float)GetRandomValue((int)radius, screenWidth - (int)radius);
     pos.y = -renderHeight / 2.0f;
     speedY = (float)GetRandomValue(180, 320);
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void FallingObstacle::Update(float dt) {

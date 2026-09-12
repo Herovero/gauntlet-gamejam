@@ -7,7 +7,10 @@ TaliTangsi::TaliTangsi(int screenWidth, Texture2D tex) {
     active = true;
     
     pos.x = (float)GetRandomValue(100, screenWidth - 100);
-    pos.y = -50.0f; 
+    pos.y = -50.0f;
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void TaliTangsi::Update(float dt) {

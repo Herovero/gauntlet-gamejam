@@ -3,13 +3,10 @@
 CoinManager::CoinManager() {
     totalCoins = 0;
     
-    // We can reuse the same coin image for the UI
     uiCoinIcon = LoadTexture("assets/coin.png");
     
-    // Keep it crisp if it is pixel art
-    if (uiCoinIcon.id > 0) {
-        SetTextureFilter(uiCoinIcon, TEXTURE_FILTER_POINT);
-    }
+    GenTextureMipmaps(&uiCoinIcon);
+    SetTextureFilter(uiCoinIcon, TEXTURE_FILTER_TRILINEAR);
 }
 
 void CoinManager::AddCoins(int amount) {

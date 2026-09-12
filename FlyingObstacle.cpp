@@ -25,6 +25,9 @@ FlyingObstacle::FlyingObstacle(int screenWidth, int screenHeight, bool flyLeft, 
         rec.x = -rec.width - 50.0f; 
         speedX = baseSpeed;
     }
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void FlyingObstacle::Update(float dt) { 

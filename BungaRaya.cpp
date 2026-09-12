@@ -8,6 +8,9 @@ BungaRaya::BungaRaya(int screenWidth, Texture2D tex) {
     
     pos.x = (float)GetRandomValue(100, screenWidth - 100);
     pos.y = -50.0f;
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void BungaRaya::Update(float dt) {

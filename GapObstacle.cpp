@@ -19,6 +19,9 @@ GapObstacle::GapObstacle(int screenWidth, Texture2D tex) {
     rec2.height = 80.0f; 
     
     speedY = 120;
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void GapObstacle::Update(float dt) {

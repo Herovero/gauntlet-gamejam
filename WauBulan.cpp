@@ -14,6 +14,9 @@ WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     rotation = 0.0f;
     targetRotation = 0.0f;
     stretchFactor = 1.0f;
+
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
 }
 
 void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
