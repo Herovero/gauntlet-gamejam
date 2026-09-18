@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "WauBulan.hpp"
 #include "GameUI.hpp"
+#include "VirtualCanvas.hpp"
 #include "SwingingKid.hpp"
 #include "Obstacle.hpp"
 #include "Background.hpp"
@@ -32,11 +33,6 @@ int main() {
     // Enable resizing and configure the window
     SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-    // Create a virtual canvas to draw the game logic at a fixed 1280x720
-    RenderTexture2D target = LoadRenderTexture(screenWidth, screenHeight);
-    // Set filter for smooth scaling
-    SetTextureFilter(target.texture, TEXTURE_FILTER_POINT);
-
     // Initialize audio to load mp3
     InitAudioDevice();
     Music bgm = LoadMusicStream("assets/bgm.mp3");
@@ -55,6 +51,7 @@ int main() {
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_standing.png");
+    VirtualCanvas canvas(screenWidth, screenHeight);
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
     ScoreManager scoreManager;
@@ -63,7 +60,7 @@ int main() {
     WindForce wind;
     KipasSatay kipas;
 
-    const float NORMAL_BG_SPEED = 1000.0f;
+    const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
     // Initialize State Machine
@@ -77,27 +74,16 @@ int main() {
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
-        if (IsKeyPressed(KEY_F11)) {
-            ToggleFullscreen();
-        }
-
-        // We add scale offset to make sure left click mouse works
-        float scale = std::min((float)GetScreenWidth() / screenWidth, (float)GetScreenHeight() / screenHeight);
-        float offsetX = (GetScreenWidth() - ((float)screenWidth * scale)) * 0.5f;
-        float offsetY = (GetScreenHeight() - ((float)screenHeight * scale)) * 0.5f;
+        if (IsKeyPressed(KEY_F11)) ToggleFullscreen();
         
         float dt = GetFrameTime();
 
         UpdateMusicStream(bgm);
 
-        if (gameState == MENU) {
-            // Translate the physical mouse position to the virtual canvas!
-            Vector2 rawMousePos = GetMousePosition();
-            Vector2 virtualMousePos = { 
-                (rawMousePos.x - offsetX) / scale, 
-                (rawMousePos.y - offsetY) / scale 
-            };
+        canvas.UpdateScaling();
+        Vector2 virtualMousePos = canvas.GetVirtualMousePosition();
 
+        if (gameState == MENU) {
             bool shopHovered = GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos);
 
             if (shopHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -138,31 +124,7 @@ int main() {
             spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
             itemSpawner.Update(dt);
 
-            // Check item collisions only if the string is still attached
-            if (!kid.isDetached) {
-                Vector2 kidHitboxPos = { kid.pos.x - 15.0f, kid.pos.y };
-
-                // Collect Bunga Raya
-                int boost = itemSpawner.CheckBungaCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                if (boost > 0) {
-                    scoreManager.currentAltitude += boost;
-                    PlaySound(sfxItem);
-                }
-                
-                // Collect Tali Tangsi
-                int extraStrings = itemSpawner.CheckTangsiCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                if (extraStrings > 0) {
-                    scoreManager.stringCharges += extraStrings;
-                    PlaySound(sfxItem);
-                }
-                
-                // Collect Coins
-                int collectedCoins = itemSpawner.CheckCoinCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);
-                if (collectedCoins > 0) {
-                    coinManager.AddCoins(collectedCoins);
-                    PlaySound(sfxItem);
-                }
-            }
+            CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, sfxItem);
 
             // Check obstacle collisions only if the string is still attached
             if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
@@ -176,16 +138,8 @@ int main() {
 
             // If the kid is falling, let the player click to create a new string and save him
             if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && scoreManager.stringCharges > 0) {
-                // Get mouse position from original monitor
-                Vector2 rawMousePos = GetMousePosition();
-
-                // Translate to virtual game canvas
-                Vector2 virtualMousePos = { 
-                    (rawMousePos.x - offsetX) / scale, 
-                    (rawMousePos.y - offsetY) / scale 
-                };
-
-                // Check if the click happened inside the Wau Bulan's hitbox
+                
+                // We just use the virtualMousePos calculated at the top of the frame!
                 if (CheckCollisionPointCircle(virtualMousePos, wau.pos, wau.radius * 3.0f)) {
                     scoreManager.stringCharges--;
                     kid.isDetached = false;
@@ -233,23 +187,17 @@ int main() {
         }
 
         // Drawing logic
-        BeginTextureMode(target);
+        canvas.BeginMode();
             if (gameState == SHOP) {
-                // Draw the shop onto the 1280x720 virtual canvas
                 shopManager.Draw(screenWidth, screenHeight, coinManager.totalCoins);
             }
             else {
-                // Switch background color and draw game world for all other states
                 ClearBackground(SKYBLUE);
                 bg.Draw();
 
                 if (gameState == MENU) {
                     wau.Draw();
                     kid.Draw(wau.pos);
-                    
-                    Vector2 rawMousePos = GetMousePosition();
-                    Vector2 virtualMousePos = { (rawMousePos.x - offsetX) / scale, (rawMousePos.y - offsetY) / scale };
-                    
                     GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos);
                 }
                 else if (gameState == PLAYING) {
@@ -273,19 +221,7 @@ int main() {
                 }
             }
 
-        EndTextureMode();
-
-        BeginDrawing();
-            ClearBackground(BLACK);
-
-            // Draw the scaled virtual canvas to the screen for ALL states
-            DrawTexturePro(target.texture, 
-                { 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height },
-                { (GetScreenWidth() - ((float)screenWidth * scale)) * 0.5f, (GetScreenHeight() - ((float)screenHeight * scale)) * 0.5f,
-                  (float)screenWidth * scale, (float)screenHeight * scale }, 
-                { 0, 0 }, 0.0f, WHITE);
-        
-        EndDrawing();
+        canvas.EndModeAndDraw();
     }
 
     wau.Unload();
@@ -298,7 +234,6 @@ int main() {
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
     UnloadMusicStream(bgm);
-    UnloadRenderTexture(target);
     CloseAudioDevice();
     CloseWindow(); 
 
