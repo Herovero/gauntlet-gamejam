@@ -13,6 +13,13 @@ KipasSatay::KipasSatay() {
 }
 
 void KipasSatay::Update(float dt, int screenWidth, bool isActive, bool isWindFromLeft) {
+    
+    // Snap to the correct side if the wind direction changes
+    if (isWindFromLeft != lastWindFromLeft) {
+        currentX = isWindFromLeft ? -400.0f : (float)screenWidth + 400.0f;
+        lastWindFromLeft = isWindFromLeft; // Update the memory
+    }
+
     // Determine target position based on wind state and direction
     if (isActive) {
         targetX = isWindFromLeft ? 200.0f : (float)screenWidth - 200.0f;
@@ -69,8 +76,9 @@ void KipasSatay::Reset() {
     currentFrame = 0;
     frameTimer = 0.0f;
     animDirection = 1;
-    currentX = -400.0f; // Start hidden
+    currentX = -400.0f; 
     targetX = -400.0f;
+    lastWindFromLeft = true;
 }
 
 void KipasSatay::Unload() {

@@ -10,6 +10,7 @@ private:
     int animDirection;
     float currentX;
     float targetX;
+    bool lastWindFromLeft;
 
 public:
     KipasSatay();
