@@ -116,6 +116,23 @@ void SwingingKid::Draw(Vector2 anchorPos) {
     //DrawCircleLines((int)visualPos.x, (int)visualPos.y, radius, GREEN);
 }
 
+void SwingingKid::Detach(float wauPosX) {
+    isDetached = true;
+    velocity.y = -300.0f; 
+    velocity.x = (pos.x < wauPosX) ? -150.0f : 150.0f;
+}
+
+void SwingingKid::TryReattach(Vector2 virtualMousePos, float wauPosX, float wauPosY, float wauRadius, float& wauInvincibleTimer, int& stringCharges) {
+    if (isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && stringCharges > 0) {
+        Vector2 wauPos = { wauPosX, wauPosY };
+        if (CheckCollisionPointCircle(virtualMousePos, wauPos, wauRadius * 3.0f)) {
+            stringCharges--;
+            isDetached = false;
+            wauInvincibleTimer = 2.0f;
+        }
+    }
+}
+
 void SwingingKid::Unload() {
     if (texture.id > 0) UnloadTexture(texture);
     if (texFalling.id > 0) UnloadTexture(texFalling);

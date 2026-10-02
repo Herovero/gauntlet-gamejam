@@ -3,12 +3,12 @@
 #include <vector>
 #include <string>
 
-// This struct holds the Hungry Shark style traits
 struct KiteProfile {
     std::string name;
     std::string texturePath;
-    float speed;             // Trait 1: Movement speed
-    float sizeMultiplier;    // Trait 2: Hitbox size (smaller is easier to dodge)
+    Texture2D texture;
+    float speed;            
+    float sizeMultiplier;   
     int price;
     bool isUnlocked;
 };
@@ -19,8 +19,15 @@ public:
     int currentIndex;
     int equippedIndex;
 
+    Texture2D bgTexture;
+
+    float currentX;
+    float targetX;
+
     ShopManager();
-    void Update(int& playerCoins, bool& returnToMenu);
+    void Update(int& playerCoins, bool& returnToMenu, float dt, int screenWidth);
     void Draw(int screenWidth, int screenHeight, int playerCoins);
     KiteProfile GetEquippedKite();
+
+    void Unload();
 };

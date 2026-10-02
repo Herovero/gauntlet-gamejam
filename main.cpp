@@ -1,9 +1,9 @@
 #include "raylib.h"
+#include "GameManager.hpp"
 #include "WauBulan.hpp"
 #include "GameUI.hpp"
 #include "VirtualCanvas.hpp"
 #include "SwingingKid.hpp"
-#include "Obstacle.hpp"
 #include "Background.hpp"
 #include "ObstacleSpawner.hpp"
 #include "CollisionManager.hpp"
@@ -104,7 +104,7 @@ int main() {
         else if (gameState == SHOP) {
             bool returnToMenu = false;
             // Pass in totalCoins from your CoinManager
-            shopManager.Update(coinManager.totalCoins, returnToMenu); 
+            shopManager.Update(coinManager.totalCoins, returnToMenu, dt, screenWidth); 
             if (returnToMenu) {
                 gameState = MENU;
             }
@@ -126,26 +126,14 @@ int main() {
 
             CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, sfxItem);
 
-            // Check obstacle collisions only if the string is still attached
+            // Check obstacle collisions
             if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
                 PlaySound(sfxHit);
-                kid.isDetached = true;
-                
-                // Give the kid a little visual bump when hitting an obstacle to emphasize the impact
-                kid.velocity.y = -300.0f; 
-                kid.velocity.x = (kid.pos.x < wau.pos.x) ? -150.0f : 150.0f;
+                kid.Detach(wau.pos.x);
             }
 
-            // If the kid is falling, let the player click to create a new string and save him
-            if (kid.isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && scoreManager.stringCharges > 0) {
-                
-                // We just use the virtualMousePos calculated at the top of the frame!
-                if (CheckCollisionPointCircle(virtualMousePos, wau.pos, wau.radius * 3.0f)) {
-                    scoreManager.stringCharges--;
-                    kid.isDetached = false;
-                    wau.invincibleTimer = 2.0f;
-                }
-            }
+            // Check for string recovery
+            kid.TryReattach(virtualMousePos, wau.pos.x, wau.pos.y, wau.radius, wau.invincibleTimer, scoreManager.stringCharges);
 
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
@@ -163,26 +151,8 @@ int main() {
         else if (gameState == GAMEOVER || gameState == VICTORY) {
             if (IsKeyPressed(KEY_SPACE)) {
                 gameState = MENU;
-                bg.Reset();
-                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
-
-                kid.pos = { wau.pos.x, wau.pos.y + 120.0f };
-                kid.velocity = { 0.0f, 0.0f };
-                kid.isDetached = false;
-
-                spawner.Reset();
-                itemSpawner.Reset();
-                scoreManager.Reset();
-                coinManager.Reset();
-                wind.Reset();
-                kipas.Reset();
-
-                // Reset to main menu positions
-                kid.isDetached = false;
-                kid.isOnGround = true;
-                kid.velocity = { 0.0f, 0.0f };
-                kid.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 50.0f };
-                wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f };
+                GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
+                    scoreManager, coinManager, wind, kipas);
             }
         }
 
@@ -230,6 +200,7 @@ int main() {
     spawner.Unload();
     itemSpawner.Unload();
     kipas.Unload();
+    shopManager.Unload();
 
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
