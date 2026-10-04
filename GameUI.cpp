@@ -1,12 +1,12 @@
 #include "GameUI.hpp"
 
 bool GameUI::IsStartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
-    Rectangle startBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f, 200.0f, 50.0f };
+    Rectangle startBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f, 200.0f, 50.0f };
     return CheckCollisionPointRec(virtualMousePos, startBtn);
 }
 
 bool GameUI::IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
-    Rectangle shopBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 60.0f, 200.0f, 50.0f };
+    Rectangle shopBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f + 70.0f, 200.0f, 50.0f };
     return CheckCollisionPointRec(virtualMousePos, shopBtn);
 }
 
@@ -34,26 +34,36 @@ void GameUI::DrawEndGameButtons(int screenWidth, int screenHeight, Vector2 virtu
     DrawText("MAIN MENU", screenWidth / 2 - MeasureText("MAIN MENU", 20) / 2, screenHeight / 2 + 120, 20, WHITE);
 }
 
-void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool showUI) {
-    if (!showUI) return; // Hide UI until the intro animation finishes
+void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool showUI, Texture2D titleTex) {
+    if (!showUI) return; 
 
     int panelWidth = 650;
     int panelHeight = 250;
-    DrawRectangle(screenWidth / 2 - panelWidth / 2, screenHeight / 2 - 130, panelWidth, panelHeight, Fade(BLACK, 0.6f));
+    // Shift panel center right by +250
+    DrawRectangle(screenWidth / 2 - panelWidth / 2 + 250, screenHeight / 2 - 130, panelWidth, panelHeight, Fade(BLACK, 0.6f));
 
-    DrawText("WAU BULAN RISING", screenWidth / 2 - MeasureText("WAU BULAN RISING", 60) / 2, screenHeight / 2 - 100, 60, DARKBLUE);
+    // Scale down the title image by 45% so it fits beautifully
+    float titleScale = 0.45f; 
+    float scaledWidth = titleTex.width * titleScale;
+    
+    // Center the scaled image relative to the shifted panel
+    int titleX = (screenWidth / 2 + 250) - (int)(scaledWidth / 2.0f);
+    int titleY = screenHeight / 2 - 100; 
+    
+    // Draw using DrawTextureEx to apply the scale
+    DrawTextureEx(titleTex, { (float)titleX, (float)titleY }, 0.0f, titleScale, WHITE);
 
-    // Draw Start Button
-    Rectangle startBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f, 200.0f, 50.0f };
+    // Draw Start Button (Using the exact same rectangle as the collision logic)
+    Rectangle startBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f, 200.0f, 50.0f };
     Color startColor = IsStartButtonClicked(screenWidth, screenHeight, virtualMousePos) ? LIGHTGRAY : DARKGRAY;
     DrawRectangleRec(startBtn, startColor);
-    DrawText("START GAME", screenWidth / 2 - MeasureText("START GAME", 20) / 2, screenHeight / 2 + 15, 20, WHITE);
+    DrawText("START GAME", screenWidth / 2 + 250 - MeasureText("START GAME", 20) / 2, screenHeight / 2 + 15, 20, WHITE);
 
     // Draw Shop Button
-    Rectangle shopBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 70.0f, 200.0f, 50.0f };
+    Rectangle shopBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f + 70.0f, 200.0f, 50.0f };
     Color shopColor = IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos) ? LIGHTGRAY : DARKGRAY;
     DrawRectangleRec(shopBtn, shopColor);
-    DrawText("OPEN SHOP", screenWidth / 2 - MeasureText("OPEN SHOP", 20) / 2, screenHeight / 2 + 85, 20, WHITE);
+    DrawText("OPEN SHOP", screenWidth / 2 + 250 - MeasureText("OPEN SHOP", 20) / 2, screenHeight / 2 + 85, 20, WHITE);
 }
 
 void GameUI::DrawVictoryScreen(int screenWidth, int screenHeight) {

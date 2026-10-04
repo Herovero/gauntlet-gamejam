@@ -54,6 +54,8 @@ int main() {
     Background bg("assets/background2.png", screenWidth, screenHeight, 30.0f);
     Background menuBg("assets/skybackground.png", screenWidth, screenHeight, 150.0f);
 
+    Texture2D gameTitle = LoadTexture("assets/game_title.png");
+
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
     SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_swinging.png");
     VirtualCanvas canvas(screenWidth, screenHeight);
@@ -75,7 +77,7 @@ int main() {
     bool introFinished = false;
 
     // Set up the menu positions
-    wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight + 200.0f };
+    wau.pos = { (float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f };
     kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
     kid.isOnGround = false;
 
@@ -139,7 +141,9 @@ int main() {
                         wau.ChangeTexture(equipped.texturePath.c_str());
                         
                         // Drop them down to the correct gameplay starting position
+                        wau.pos.x = (float)screenWidth / 2.0f;
                         wau.pos.y = screenHeight - 600.0f; 
+                        kid.pos.x = wau.pos.x;
                         kid.pos.y = wau.pos.y + 550.0f;
                     } 
                     else if (shopHovered) {
@@ -243,7 +247,7 @@ int main() {
                     // Reset Intro Animation State for the menu
                     introTimer = 0.0f;
                     introFinished = false;
-                    wau.Reset((float)screenWidth / 2.0f, (float)screenHeight + 200.0f);
+                    wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
                     kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
                 }
             }
@@ -259,7 +263,7 @@ int main() {
                 
                 wau.Draw();
                 kid.Draw(wau.pos);
-                GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos, introFinished);
+                GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos, introFinished, gameTitle);
             }
             else {
                 ClearBackground(SKYBLUE);
@@ -301,6 +305,7 @@ int main() {
     kipas.Unload();
     shopManager.Unload();
 
+    UnloadTexture(gameTitle);
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
     UnloadMusicStream(menuBgm);
