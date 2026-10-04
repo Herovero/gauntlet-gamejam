@@ -23,5 +23,6 @@ class WauBulan {
         void Update(float dt, int screenWidth, int screenHeight);
         void Draw();
         void Reset(float startX, float startY);
+        void ChangeTexture(const char* newTexturePath);
         void Unload();
 };

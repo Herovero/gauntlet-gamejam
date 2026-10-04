@@ -10,6 +10,30 @@ bool GameUI::IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virt
     return CheckCollisionPointRec(virtualMousePos, shopBtn);
 }
 
+bool GameUI::IsRestartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
+    Rectangle btn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 40.0f, 200.0f, 50.0f };
+    return CheckCollisionPointRec(virtualMousePos, btn);
+}
+
+bool GameUI::IsMainMenuButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
+    Rectangle btn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 105.0f, 200.0f, 50.0f };
+    return CheckCollisionPointRec(virtualMousePos, btn);
+}
+
+void GameUI::DrawEndGameButtons(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
+    // Draw Restart Button
+    Rectangle restartBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 40.0f, 200.0f, 50.0f };
+    Color restartColor = IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos) ? LIGHTGRAY : DARKGRAY;
+    DrawRectangleRec(restartBtn, restartColor);
+    DrawText("RESTART", screenWidth / 2 - MeasureText("RESTART", 20) / 2, screenHeight / 2 + 55, 20, WHITE);
+
+    // Draw Main Menu Button
+    Rectangle menuBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 105.0f, 200.0f, 50.0f };
+    Color menuColor = IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos) ? LIGHTGRAY : DARKGRAY;
+    DrawRectangleRec(menuBtn, menuColor);
+    DrawText("MAIN MENU", screenWidth / 2 - MeasureText("MAIN MENU", 20) / 2, screenHeight / 2 + 120, 20, WHITE);
+}
+
 void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool showUI) {
     if (!showUI) return; // Hide UI until the intro animation finishes
 
@@ -34,12 +58,11 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
 
 void GameUI::DrawVictoryScreen(int screenWidth, int screenHeight) {
     int panelWidth = 550;
-    int panelHeight = 250;
+    int panelHeight = 280;
     int panelX = screenWidth / 2 - panelWidth / 2;
     int panelY = screenHeight / 2 - 120;
     
     DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.7f));
     DrawText("MERDEKA!", screenWidth / 2 - MeasureText("MERDEKA!", 60) / 2, screenHeight / 2 - 90, 60, GOLD);
     DrawText("You Reached the Top!", screenWidth / 2 - MeasureText("You Reached the Top!", 30) / 2, screenHeight / 2 - 10, 30, RAYWHITE);
-    DrawText("Press SPACE to Play Again", screenWidth / 2 - MeasureText("Press SPACE to Play Again", 20) / 2, screenHeight / 2 + 70, 20, YELLOW);
 }

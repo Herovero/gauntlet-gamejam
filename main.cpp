@@ -136,6 +136,7 @@ int main() {
                         KiteProfile equipped = shopManager.GetEquippedKite();
                         wau.speed = equipped.speed;
                         wau.radius = 25.0f * equipped.sizeMultiplier;
+                        wau.ChangeTexture(equipped.texturePath.c_str());
                         
                         // Drop them down to the correct gameplay starting position
                         wau.pos.y = screenHeight - 600.0f; 
@@ -194,7 +195,7 @@ int main() {
                 StopMusicStream(bgm);
             }
         }
-        else if (gameState == GAMEOVER || gameState == VICTORY) {
+        /*else if (gameState == GAMEOVER || gameState == VICTORY) {
             if (IsKeyPressed(KEY_SPACE)) {
                 gameState = MENU;
 
@@ -208,6 +209,43 @@ int main() {
                 introFinished = false;
                 wau.Reset((float)screenWidth / 2.0f, (float)screenHeight + 200.0f);
                 kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
+            }
+        }*/
+        else if (gameState == GAMEOVER || gameState == VICTORY) {
+            bool restartHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
+            bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (restartHovered) {
+                    gameState = PLAYING;
+                    PlayMusicStream(bgm);
+                    
+                    GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
+                        scoreManager, coinManager, wind, kipas);
+                        
+                    // Re-apply equipped kite stats directly for a fast restart
+                    KiteProfile equipped = shopManager.GetEquippedKite();
+                    wau.speed = equipped.speed;
+                    wau.radius = 25.0f * equipped.sizeMultiplier;
+                    wau.ChangeTexture(equipped.texturePath.c_str());
+                    
+                    wau.pos.y = screenHeight - 600.0f; 
+                    kid.pos.y = wau.pos.y + 550.0f;
+                    kid.isOnGround = false;
+                }
+                else if (menuHovered) {
+                    gameState = MENU;
+                    PlayMusicStream(menuBgm);
+                    
+                    GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
+                        scoreManager, coinManager, wind, kipas);
+                    
+                    // Reset Intro Animation State for the menu
+                    introTimer = 0.0f;
+                    introFinished = false;
+                    wau.Reset((float)screenWidth / 2.0f, (float)screenHeight + 200.0f);
+                    kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
+                }
             }
         }
 
@@ -239,12 +277,15 @@ int main() {
                 } 
                 else if (gameState == GAMEOVER) {
                     scoreManager.DrawGameOver(screenWidth, screenHeight);
+
+                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos);
                 }
                 else if (gameState == VICTORY) {
                     wau.Draw();
                     kid.Draw(wau.pos);
                     spawner.Draw();
                     GameUI::DrawVictoryScreen(screenWidth, screenHeight);
+                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos);
                 }
             }
 

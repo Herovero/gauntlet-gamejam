@@ -105,6 +105,16 @@ void WauBulan::Reset(float startX, float startY) {
     invincibleTimer = 0.0f;
 }
 
+void WauBulan::ChangeTexture(const char* newTexturePath) {
+    // Free the old image from memory
+    UnloadTexture(texture);
+    
+    // Load the new image and reapply your smooth scaling filters
+    texture = LoadTexture(newTexturePath);
+    GenTextureMipmaps(&texture);
+    SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
+}
+
 void WauBulan::Unload() {
     UnloadTexture(texture);
 }
