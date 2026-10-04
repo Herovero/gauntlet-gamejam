@@ -51,6 +51,29 @@ void Background::Draw() {
     }
 }
 
+// Scroll downwards infinitely without stopping
+void Background::UpdateInfinite(float dt) {
+    scrollY += scrollSpeed * dt;
+    
+    // Once we scroll past the height of the image, snap back seamlessly
+    if (scrollY >= drawHeight) {
+        scrollY -= drawHeight;
+    }
+}
+
+// Draw the image and a seamless copy right above it
+void Background::DrawInfinite() {
+    Rectangle src = { 0.0f, 0.0f, (float)texture.width, (float)texture.height };
+
+    // Draw the main image
+    Rectangle destMain = { drawX, scrollY, drawWidth, drawHeight };
+    DrawTexturePro(texture, src, destMain, { 0.0f, 0.0f }, 0.0f, WHITE);
+
+    // Draw the copy directly above it
+    Rectangle destTop = { drawX, scrollY - drawHeight, drawWidth, drawHeight };
+    DrawTexturePro(texture, src, destTop, { 0.0f, 0.0f }, 0.0f, WHITE);
+}
+
 void Background::Unload() {
     UnloadTexture(texture);
 }

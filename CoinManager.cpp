@@ -39,9 +39,7 @@ void CoinManager::DrawGameOver(int screenWidth, int screenHeight) {
     DrawText(text.c_str(), screenWidth / 2 - MeasureText(text.c_str(), 30) / 2, screenHeight / 2 + 30, 30, GOLD);
 }
 
-void CoinManager::Reset() {
-    totalCoins = 0;
-}
+void CoinManager::Reset() {}
 
 void CoinManager::Unload() {
     UnloadTexture(uiCoinIcon);

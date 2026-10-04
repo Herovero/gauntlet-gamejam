@@ -22,5 +22,6 @@ class WauBulan {
         WauBulan(float startX, float startY, const char* texturePath);
         void Update(float dt, int screenWidth, int screenHeight);
         void Draw();
+        void Reset(float startX, float startY);
         void Unload();
 };

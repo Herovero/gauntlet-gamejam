@@ -19,5 +19,9 @@ public:
     void Update(float dt);
     void Reset();
     void Draw();
+
+    void UpdateInfinite(float dt);
+    void DrawInfinite();
+    
     void Unload();
 };

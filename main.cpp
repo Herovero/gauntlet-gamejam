@@ -13,6 +13,7 @@
 #include "ItemSpawner.hpp"
 #include "WindForce.hpp"
 #include "KipasSatay.hpp"
+#include <cmath>
 
 enum GameState {
     MENU,
@@ -38,6 +39,9 @@ int main() {
     Music bgm = LoadMusicStream("assets/bgm.mp3");
     SetMusicVolume(bgm, 1.0f);
 
+    Music menuBgm = LoadMusicStream("assets/menu_bgm.mp3");
+    SetMusicVolume(menuBgm, 1.0f);
+
     Sound sfxHit = LoadSound("assets/hit.wav");
     SetSoundVolume(sfxHit, 0.8f);
 
@@ -48,9 +52,10 @@ int main() {
     SetTargetFPS(60); 
 
     Background bg("assets/background2.png", screenWidth, screenHeight, 30.0f);
+    Background menuBg("assets/skybackground.png", screenWidth, screenHeight, 150.0f);
 
     WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
-    SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_standing.png");
+    SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_swinging.png");
     VirtualCanvas canvas(screenWidth, screenHeight);
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
@@ -66,10 +71,16 @@ int main() {
     // Initialize State Machine
     GameState gameState = MENU;
 
+    float introTimer = 0.0f;
+    bool introFinished = false;
+
     // Set up the menu positions
-    kid.isOnGround = true;
-    kid.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 50.0f }; // Rest on ground
-    wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 600.0f }; // Hover in sky
+    wau.pos = { (float)screenWidth / 2.0f, (float)screenHeight + 200.0f };
+    kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
+    kid.isOnGround = false;
+
+    // Start the menu music
+    PlayMusicStream(menuBgm);
 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
@@ -79,26 +90,61 @@ int main() {
         float dt = GetFrameTime();
 
         UpdateMusicStream(bgm);
+        UpdateMusicStream(menuBgm);
 
         canvas.UpdateScaling();
         Vector2 virtualMousePos = canvas.GetVirtualMousePosition();
 
         if (gameState == MENU) {
-            bool shopHovered = GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos);
+            // Infinite scrolling logic handled by your new class!
+            menuBg.UpdateInfinite(dt);
 
-            if (shopHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                gameState = SHOP;
-            }
-            // Check if player clicks elsewhere to start the game
-            else if (IsKeyPressed(KEY_SPACE) || (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !shopHovered)) {
-                gameState = PLAYING;
-                kid.isOnGround = false;
-                PlayMusicStream(bgm);
-                
-                // Kite Stats
-                KiteProfile equipped = shopManager.GetEquippedKite();
-                wau.speed = equipped.speed;
-                wau.radius = 25.0f * equipped.sizeMultiplier;
+            // Intro Rising Animation
+            if (!introFinished) {
+                introTimer += dt;
+                float duration = 3.0f; 
+                float startY = screenHeight + 200.0f;
+                float endY = screenHeight - 600.0f;
+
+                if (introTimer < duration) {
+                    float t = introTimer / duration;
+                    float easeOut = 1.0f - (1.0f - t) * (1.0f - t); 
+                    wau.pos.y = startY + (endY - startY) * easeOut;
+                    kid.pos.y = wau.pos.y + 550.0f;
+                } else {
+                    wau.pos.y = endY;
+                    kid.pos.y = wau.pos.y + 550.0f;
+                    introFinished = true;
+                }
+            } 
+            // UI Interactions (Only after rising finishes)
+            else {
+                wau.pos.y = (screenHeight - 600.0f) + std::sin(GetTime() * 3.0f) * 10.0f;
+                kid.pos.y = wau.pos.y + 550.0f;
+
+                bool startHovered = GameUI::IsStartButtonClicked(screenWidth, screenHeight, virtualMousePos);
+                bool shopHovered = GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos);
+
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (startHovered) {
+                        gameState = PLAYING;
+                        kid.isOnGround = false;
+
+                        StopMusicStream(menuBgm);
+                        PlayMusicStream(bgm);
+                        
+                        KiteProfile equipped = shopManager.GetEquippedKite();
+                        wau.speed = equipped.speed;
+                        wau.radius = 25.0f * equipped.sizeMultiplier;
+                        
+                        // Drop them down to the correct gameplay starting position
+                        wau.pos.y = screenHeight - 600.0f; 
+                        kid.pos.y = wau.pos.y + 550.0f;
+                    } 
+                    else if (shopHovered) {
+                        gameState = SHOP;
+                    }
+                }
             }
         }
         else if (gameState == SHOP) {
@@ -151,8 +197,17 @@ int main() {
         else if (gameState == GAMEOVER || gameState == VICTORY) {
             if (IsKeyPressed(KEY_SPACE)) {
                 gameState = MENU;
+
+                PlayMusicStream(menuBgm);
+
                 GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                     scoreManager, coinManager, wind, kipas);
+                
+                // Reset Intro Animation State
+                introTimer = 0.0f;
+                introFinished = false;
+                wau.Reset((float)screenWidth / 2.0f, (float)screenHeight + 200.0f);
+                kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
             }
         }
 
@@ -161,16 +216,18 @@ int main() {
             if (gameState == SHOP) {
                 shopManager.Draw(screenWidth, screenHeight, coinManager.totalCoins);
             }
+            else if (gameState == MENU) {
+                menuBg.DrawInfinite(); // Uses your new looping method!
+                
+                wau.Draw();
+                kid.Draw(wau.pos);
+                GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos, introFinished);
+            }
             else {
                 ClearBackground(SKYBLUE);
                 bg.Draw();
 
-                if (gameState == MENU) {
-                    wau.Draw();
-                    kid.Draw(wau.pos);
-                    GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos);
-                }
-                else if (gameState == PLAYING) {
+                if (gameState == PLAYING) {
                     wau.Draw();
                     wind.Draw(screenWidth);
                     kipas.Draw(screenHeight, wind.IsActive(), wind.IsWindFromLeft());
@@ -197,6 +254,7 @@ int main() {
     wau.Unload();
     kid.Unload();
     bg.Unload();
+    menuBg.Unload();
     spawner.Unload();
     itemSpawner.Unload();
     kipas.Unload();
@@ -204,6 +262,7 @@ int main() {
 
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
+    UnloadMusicStream(menuBgm);
     UnloadMusicStream(bgm);
     CloseAudioDevice();
     CloseWindow(); 

@@ -94,6 +94,17 @@ void WauBulan::Draw() {
     DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
 }
 
+void WauBulan::Reset(float startX, float startY) {
+    pos.x = startX;
+    pos.y = startY;
+    
+    rotation = 0.0f;
+    targetRotation = 0.0f;
+    stretchFactor = 1.0f; 
+    
+    invincibleTimer = 0.0f;
+}
+
 void WauBulan::Unload() {
     UnloadTexture(texture);
 }
