@@ -18,7 +18,7 @@ class SwingingKid {
 
         SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, const char* standingPath);
         void Update(float dt, Vector2 anchorPos, float windForce);
-        void Draw(Vector2 anchorPos);
+        void Draw(Vector2 anchorPos, float invincibleTimer = 0.0f);
         void Detach(float wauPosX);
         void TryReattach(Vector2 virtualMousePos, float wauPosX, float wauPosY, float wauRadius, float& wauInvincibleTimer, int& stringCharges);
         void Unload();

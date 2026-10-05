@@ -65,7 +65,15 @@ void SwingingKid::Update(float dt, Vector2 anchorPos, float windForce) {
     }
 }
 
-void SwingingKid::Draw(Vector2 anchorPos) {
+void SwingingKid::Draw(Vector2 anchorPos, float invincibleTimer) {
+    // Calculate the flash state
+    Color tint = WHITE;
+    if (invincibleTimer > 0.0f) {
+        if ((int)(invincibleTimer * 15) % 2 == 0) {
+            tint = Fade(WHITE, 0.05f); 
+        }
+    }
+
     // Determine horizontal facing direction based on anchor position
     bool isSwingingLeft = (pos.x < anchorPos.x);
 
@@ -107,7 +115,7 @@ void SwingingKid::Draw(Vector2 anchorPos) {
         Rectangle dest   = { visualPos.x, visualPos.y, renderWidth, renderHeight };
         Vector2 origin   = { renderWidth / 2.0f, renderHeight / 2.0f };
 
-        DrawTexturePro(currentTex, source, dest, origin, rotation, WHITE);
+        DrawTexturePro(currentTex, source, dest, origin, rotation, tint);
     } else {
         DrawCircleV(visualPos, radius, isDetached ? RED : ORANGE);
     }

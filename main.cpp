@@ -141,8 +141,16 @@ int main() {
         }
         else if (gameState == SHOP) {
             bool returnToMenu = false;
-            // Pass in totalCoins from your CoinManager
+
+            int coinsBefore = coinManager.totalCoins;
+
             shopManager.Update(coinManager.totalCoins, returnToMenu, dt, screenWidth); 
+
+            // If your balance went down, you successfully bought a kite
+            if (coinManager.totalCoins < coinsBefore) {
+                audio.PlayPurchase();
+            }
+
             if (returnToMenu) {
                 gameState = MENU;
             }
@@ -164,7 +172,7 @@ int main() {
             kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft());
             kid.Update(dt, wau.pos, wind.GetForce());
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
-            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
+            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
             itemSpawner.Update(dt);
 
             CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, audio);
@@ -176,7 +184,14 @@ int main() {
             }
 
             // Check for string recovery
+            bool wasDetached = kid.isDetached;
+
             kid.TryReattach(virtualMousePos, wau.pos.x, wau.pos.y, wau.radius, wau.invincibleTimer, scoreManager.stringCharges);
+
+            // If they were detached but aren't anymore, the catch was successful!
+            if (wasDetached && !kid.isDetached) {
+                audio.PlaySnap();
+            }
 
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
@@ -249,7 +264,7 @@ int main() {
                     wau.Draw();
                     wind.Draw(screenWidth);
                     kipas.Draw(screenHeight, wind.IsActive(), wind.IsWindFromLeft());
-                    kid.Draw(wau.pos);
+                    kid.Draw(wau.pos, wau.invincibleTimer);
                     spawner.Draw();
                     itemSpawner.Draw();
                     scoreManager.Draw();

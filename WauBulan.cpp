@@ -59,14 +59,14 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
 }
 
 void WauBulan::Draw() {
-    Color drawColor = WHITE;
+    Color tint = WHITE;
 
     float time = (float)GetTime();
 
     if (invincibleTimer > 0.0f) {
         // Flicker every 0.1 seconds
-        if ((int)(invincibleTimer * 10) % 2 == 0) {
-            drawColor = Fade(WHITE, 0.4f); // Make it 40% opaque
+        if ((int)(invincibleTimer * 15) % 2 == 0) {
+            tint = Fade(WHITE, 0.05f); // Ghostly transparent
         }
     }
 
@@ -88,7 +88,7 @@ void WauBulan::Draw() {
     Vector2 origin      = { currentWidth / 2.0f, currentHeight / 2.0f };
 
     // DrawTexturePro(Texture2D texture, Rectangle srcrec, Rectangle dstrec, Vector2 origin, float rotation, Color tint)
-    DrawTexturePro(texture, sourceRec, destRec, origin, finalRotation, WHITE);
+    DrawTexturePro(texture, sourceRec, destRec, origin, finalRotation, tint);
 
     // Collision hitbox debug
     DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);

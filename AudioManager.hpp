@@ -12,8 +12,11 @@ private:
     Sound sfxCoin;
     Sound sfxPurchase;
     Sound sfxWind;
+    Sound sfxSnap;
 
     Music* currentBgm;
+
+    double lastHornbillTime;
 
 public:
     AudioManager();
@@ -30,6 +33,7 @@ public:
     void PlayCoin();
     void PlayPurchase();
     void PlayWind();
+    void PlaySnap();
 
     void Unload();
 };

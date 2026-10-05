@@ -27,7 +27,7 @@ ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     Reset();
 }
 
-void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed) {
+void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed, AudioManager& audio) {
     bool gapExists = false;
     for (const auto& obs : obstacles) {
         if (obs->IsGapType()) {
@@ -67,15 +67,27 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed) 
     int randomIndex = GetRandomValue(0, pool.size() - 1);
     int randomType = pool[randomIndex];
 
-    // Spawn the chosen obstacle
-    if (randomType == 0)      obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
-    else if (randomType == 1) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlyingFrames, bgSpeed));
-    else if (randomType == 2) obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlyingFrames, bgSpeed));
-    else if (randomType == 3) obstacles.push_back(std::make_unique<BouncingObstacle>(screenWidth, texSwaying));
-    else if (randomType == 4) obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
+    // Spawn the chosen obstacle and play sounds for the Hornbills!
+    if (randomType == 0) {
+        obstacles.push_back(std::make_unique<FallingObstacle>(screenWidth, texFalling));
+    }
+    else if (randomType == 1) {
+        obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, true, texFlyingFrames, bgSpeed));
+        audio.PlayHornbill();
+    }
+    else if (randomType == 2) {
+        obstacles.push_back(std::make_unique<FlyingObstacle>(screenWidth, screenHeight, false, texFlyingFrames, bgSpeed));
+        audio.PlayHornbill();
+    }
+    else if (randomType == 3) {
+        obstacles.push_back(std::make_unique<BouncingObstacle>(screenWidth, texSwaying));
+    }
+    else if (randomType == 4) {
+        obstacles.push_back(std::make_unique<GapObstacle>(screenWidth, texGap));
+    }
 }
 
-void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed) {
+void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed, AudioManager& audio) {
     if (currentAltitude >= 550 && currentAltitude <= 800.0f) {
         maxObstacles = 4; // Keep the screen less crowded early on
     } else {
@@ -85,7 +97,7 @@ void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed) {
     difficultyTimer += dt;
     if (difficultyTimer > 8.0f && obstacles.size() < (size_t)maxObstacles) {
         difficultyTimer = 0.0f;
-        SpawnRandomObstacle(currentAltitude, bgSpeed);
+        SpawnRandomObstacle(currentAltitude, bgSpeed, audio);
     }
 
     int obstaclesToReplace = 0;
@@ -104,7 +116,7 @@ void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed) {
     }
 
     for (int i = 0; i < obstaclesToReplace; i++) {
-        SpawnRandomObstacle(currentAltitude, bgSpeed);
+        SpawnRandomObstacle(currentAltitude, bgSpeed, audio);
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include "Obstacle.hpp"
+#include "AudioManager.hpp"
 #include <vector>
 #include <memory>
 
@@ -18,9 +19,9 @@ public:
     Texture2D texGap;
 
     ObstacleSpawner(int screenWidth, int screenHeight);
-    void Update(float dt, float currentAltitude, float bgSpeed);
+    void Update(float dt, float currentAltitude, float bgSpeed, AudioManager& audio);
     void Draw();
     void Reset();
     void Unload();
-    void SpawnRandomObstacle(float currentAltitude, float bgSpeed);
+    void SpawnRandomObstacle(float currentAltitude, float bgSpeed, AudioManager& audio);
 };
