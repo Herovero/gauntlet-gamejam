@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "GameManager.hpp"
+#include "AudioManager.hpp"
 #include "WauBulan.hpp"
 #include "GameUI.hpp"
 #include "VirtualCanvas.hpp"
@@ -36,17 +37,8 @@ int main() {
 
     // Initialize audio to load mp3
     InitAudioDevice();
-    Music bgm = LoadMusicStream("assets/bgm.mp3");
-    SetMusicVolume(bgm, 1.0f);
-
-    Music menuBgm = LoadMusicStream("assets/menu_bgm.mp3");
-    SetMusicVolume(menuBgm, 1.0f);
-
-    Sound sfxHit = LoadSound("assets/hit.wav");
-    SetSoundVolume(sfxHit, 0.8f);
-
-    Sound sfxItem = LoadSound("assets/pickup.wav");
-    SetSoundVolume(sfxItem, 0.9f);
+    AudioManager audio;
+    audio.PlayMenuBGM();
 
     // Framerate per second
     SetTargetFPS(60); 
@@ -81,9 +73,6 @@ int main() {
     kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
     kid.isOnGround = false;
 
-    // Start the menu music
-    PlayMusicStream(menuBgm);
-
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
     while (!WindowShouldClose()) { 
@@ -91,8 +80,7 @@ int main() {
         
         float dt = GetFrameTime();
 
-        UpdateMusicStream(bgm);
-        UpdateMusicStream(menuBgm);
+        audio.Update();
 
         canvas.UpdateScaling();
         Vector2 virtualMousePos = canvas.GetVirtualMousePosition();
@@ -132,8 +120,7 @@ int main() {
                         gameState = PLAYING;
                         kid.isOnGround = false;
 
-                        StopMusicStream(menuBgm);
-                        PlayMusicStream(bgm);
+                        audio.PlayGameBGM();
                         
                         KiteProfile equipped = shopManager.GetEquippedKite();
                         wau.speed = equipped.speed;
@@ -167,19 +154,24 @@ int main() {
 
             if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
             else wau.pos.y += 400.0f * dt;
-
+            
+            bool windWasActive = wind.IsActive();
             wind.Update(dt);
+            if (!windWasActive && wind.IsActive()) {
+                audio.PlayWind(); 
+            }
+
             kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft());
             kid.Update(dt, wau.pos, wind.GetForce());
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
             spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed);
             itemSpawner.Update(dt);
 
-            CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, sfxItem);
+            CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, audio);
 
             // Check obstacle collisions
             if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
-                PlaySound(sfxHit);
+                audio.PlayHit();
                 kid.Detach(wau.pos.x);
             }
 
@@ -190,31 +182,15 @@ int main() {
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
                 gameState = GAMEOVER;
 
-                StopMusicStream(bgm);
+                audio.StopBGM();
             }
 
             if (bg.IsAtTop()) {
                 gameState = VICTORY;
 
-                StopMusicStream(bgm);
+                audio.StopBGM();
             }
         }
-        /*else if (gameState == GAMEOVER || gameState == VICTORY) {
-            if (IsKeyPressed(KEY_SPACE)) {
-                gameState = MENU;
-
-                PlayMusicStream(menuBgm);
-
-                GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
-                    scoreManager, coinManager, wind, kipas);
-                
-                // Reset Intro Animation State
-                introTimer = 0.0f;
-                introFinished = false;
-                wau.Reset((float)screenWidth / 2.0f, (float)screenHeight + 200.0f);
-                kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
-            }
-        }*/
         else if (gameState == GAMEOVER || gameState == VICTORY) {
             bool restartHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
             bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
@@ -222,7 +198,7 @@ int main() {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (restartHovered) {
                     gameState = PLAYING;
-                    PlayMusicStream(bgm);
+                    audio.PlayGameBGM();
                     
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
@@ -239,7 +215,7 @@ int main() {
                 }
                 else if (menuHovered) {
                     gameState = MENU;
-                    PlayMusicStream(menuBgm);
+                    audio.PlayMenuBGM();
                     
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
@@ -306,10 +282,7 @@ int main() {
     shopManager.Unload();
 
     UnloadTexture(gameTitle);
-    UnloadSound(sfxHit);
-    UnloadSound(sfxItem);
-    UnloadMusicStream(menuBgm);
-    UnloadMusicStream(bgm);
+    audio.Unload();
     CloseAudioDevice();
     CloseWindow(); 
 

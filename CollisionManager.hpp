@@ -5,6 +5,7 @@
 #include "ItemSpawner.hpp"
 #include "ScoreManager.hpp"
 #include "CoinManager.hpp"
+#include "AudioManager.hpp"
 
 class CollisionManager {
 public:
@@ -13,5 +14,5 @@ public:
     static bool CheckPlayerCollisions(const WauBulan& wau, const SwingingKid& kid, const ObstacleSpawner& spawner);
 
     static void HandleItemCollections(WauBulan& wau, SwingingKid& kid, ItemSpawner& itemSpawner, 
-        ScoreManager& scoreManager, CoinManager& coinManager, Sound sfxItem);
+        ScoreManager& scoreManager, CoinManager& coinManager, AudioManager& audio);
 };
