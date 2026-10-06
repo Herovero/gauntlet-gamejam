@@ -3,6 +3,8 @@
 
 class GameUI {
 public:
+    static void DrawTraditionalFrame(Rectangle bounds);
+    
     static bool IsStartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
     static bool IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
 

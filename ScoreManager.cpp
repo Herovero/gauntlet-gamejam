@@ -1,4 +1,5 @@
 #include "ScoreManager.hpp"
+#include "GameUI.hpp"
 
 ScoreManager::ScoreManager() {
     currentAltitude = 0.0f;
@@ -22,36 +23,39 @@ void ScoreManager::Update(float dt, bool isDetached, bool isBoosted) {
 }
 
 void ScoreManager::Draw() {
-    // Draw semi transparent panel
-    DrawRectangle(10, 10, 260, 85, Fade(BLACK, 0.5f));
+    // 1. Draw a smaller traditional frame for the HUD
+    Rectangle hudPanel = { 10.0f, 10.0f, 260.0f, 100.0f };
+    GameUI::DrawTraditionalFrame(hudPanel);
 
-    // Draw current altitude at the top left
-    const char* text = TextFormat("Altitude: %.0f m", currentAltitude);
-    DrawText(text, 20, 20, 30, BLUE);
-
-    // Draw remaining string
-    DrawText(TextFormat("Tali Tangsi: %d", stringCharges), 20, 60, 20, GOLD);
+    // 2. Use dark brown colors instead of neon blue/yellow to contrast with the rice paper
+    Color textDark = GetColor(0x3E2723FF); 
+    
+    DrawText(TextFormat("Altitude: %d m", (int)currentAltitude), 30, 25, 24, textDark);
+    DrawText(TextFormat("Tali Tangsi: %d", stringCharges), 30, 65, 24, textDark);
 }
 
 void ScoreManager::DrawGameOver(int screenWidth, int screenHeight) {
-    // Draw semi transparent panel
-    int panelWidth = 500;
-    int panelHeight = 300;
-    int panelX = screenWidth / 2 - panelWidth / 2;
-    int panelY = screenHeight / 2 - 140;
+    // 1. Create a panel large enough to hold the text AND the buttons
+    int panelWidth = 540;
+    int panelHeight = 320;
+    Rectangle gameOverPanel = {
+        (float)(screenWidth / 2 - panelWidth / 2),
+        (float)(screenHeight / 2 - 160),
+        (float)panelWidth,
+        (float)panelHeight
+    };
+
+    GameUI::DrawTraditionalFrame(gameOverPanel);
+
+    // 2. Adjust Y-coordinates to push the text up, preventing overlap with the buttons
+    DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 50) / 2, screenHeight / 2 - 120, 50, GetColor(0x8B0000FF)); // Dark Red
     
-    DrawRectangle(panelX, panelY, panelWidth, panelHeight, Fade(BLACK, 0.7f));
-
-    const char* title = "GAME OVER";
-    const char* currentText = TextFormat("Altitude Reached: %.0f m", currentAltitude);
-    const char* highText = TextFormat("Highest Altitude: %.0f m", highestAltitude);
-    const char* restartText = "Press SPACE to Restart";
-
-    // Use MeasureText to center everything based on font size
-    DrawText(title, screenWidth / 2 - MeasureText(title, 50) / 2, screenHeight / 2 - 100, 50, RED);
-    DrawText(currentText, screenWidth / 2 - MeasureText(currentText, 30) / 2, screenHeight / 2 - 20, 30, GREEN);
-    DrawText(highText, screenWidth / 2 - MeasureText(highText, 25) / 2, screenHeight / 2 + 25, 25, GOLD);
-    DrawText(restartText, screenWidth / 2 - MeasureText(restartText, 20) / 2, screenHeight / 2 + 80, 20, WHITE);
+    Color textDark = GetColor(0x3E2723FF);
+    DrawText(TextFormat("Altitude Reached: %d m", (int)currentAltitude), screenWidth / 2 - MeasureText(TextFormat("Altitude Reached: %d m", (int)currentAltitude), 28) / 2, screenHeight / 2 - 50, 28, textDark);
+    DrawText(TextFormat("Highest Altitude: %d m", (int)highestAltitude), screenWidth / 2 - MeasureText(TextFormat("Highest Altitude: %d m", (int)highestAltitude), 22) / 2, screenHeight / 2 - 10, 22, textDark);
+    
+    // Note: The "Press SPACE to Restart" text has been intentionally removed here 
+    // since you are now using the clickable buttons from GameUI!
 }
 
 void ScoreManager::Reset() {
