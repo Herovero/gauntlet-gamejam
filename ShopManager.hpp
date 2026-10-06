@@ -20,13 +20,14 @@ public:
     int equippedIndex;
 
     Texture2D bgTexture;
+    Texture2D coinTexture;
 
     float currentX;
     float targetX;
 
     ShopManager();
-    void Update(int& playerCoins, bool& returnToMenu, float dt, int screenWidth);
-    void Draw(int screenWidth, int screenHeight, int playerCoins);
+    void Update(int& playerCoins, bool& returnToMenu, float dt, int screenWidth, Vector2 virtualMousePos);
+    void Draw(int screenWidth, int screenHeight, int playerCoins, Vector2 virtualMousePos);
     KiteProfile GetEquippedKite();
 
     void Unload();

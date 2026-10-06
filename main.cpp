@@ -144,7 +144,7 @@ int main() {
 
             int coinsBefore = coinManager.totalCoins;
 
-            shopManager.Update(coinManager.totalCoins, returnToMenu, dt, screenWidth); 
+            shopManager.Update(coinManager.totalCoins, returnToMenu, dt, screenWidth, virtualMousePos);
 
             // If your balance went down, you successfully bought a kite
             if (coinManager.totalCoins < coinsBefore) {
@@ -247,7 +247,7 @@ int main() {
         // Drawing logic
         canvas.BeginMode();
             if (gameState == SHOP) {
-                shopManager.Draw(screenWidth, screenHeight, coinManager.totalCoins);
+                shopManager.Draw(screenWidth, screenHeight, coinManager.totalCoins, virtualMousePos);
             }
             else if (gameState == MENU) {
                 menuBg.DrawInfinite(); // Uses your new looping method!
