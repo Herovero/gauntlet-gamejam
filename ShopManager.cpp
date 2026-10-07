@@ -9,6 +9,10 @@ ShopManager::ShopManager() {
 
     bgTexture = LoadTexture("assets/shop_bg.png");
 
+    uiCoinIcon = LoadTexture("assets/coin.png");
+    GenTextureMipmaps(&uiCoinIcon);
+    SetTextureFilter(uiCoinIcon, TEXTURE_FILTER_TRILINEAR);
+
     // Load textures and apply filters
     Texture2D t1 = LoadTexture("assets/waubulan.png");
     GenTextureMipmaps(&t1); SetTextureFilter(t1, TEXTURE_FILTER_TRILINEAR);
@@ -95,10 +99,21 @@ void ShopManager::Draw(int screenWidth, int screenHeight, int playerCoins, Vecto
     // Draw Coin Texture and count
     DrawText("SHOP", screenWidth / 2 - MeasureText("SHOP", 40) / 2, 40, 40, GOLD);
     
-    Rectangle coinSrc = { 0.0f, 0.0f, (float)coinTexture.width, (float)coinTexture.height };
-    Rectangle coinDst = { (float)screenWidth - 180.0f, 30.0f, 45.0f, 45.0f };
-    DrawTexturePro(coinTexture, coinSrc, coinDst, {0,0}, 0.0f, WHITE);
-    DrawText(TextFormat("%d", playerCoins), screenWidth - 125, 40, 30, YELLOW);
+    // Draw Coin Texture and count (Matching CoinManager exactly)
+    float xPos = (float)screenWidth - 150.0f;
+    float yPos = 30.0f;
+
+    if (uiCoinIcon.id > 0) {
+        float renderSize = 70.0f;
+        Rectangle source = { 0.0f, 0.0f, (float)uiCoinIcon.width, (float)uiCoinIcon.height };
+        Rectangle dest = { xPos, yPos, renderSize, renderSize };
+        DrawTexturePro(uiCoinIcon, source, dest, { 0.0f, 0.0f }, 0.0f, WHITE);
+    } else {
+        DrawCircleV({ xPos + 15.0f, yPos + 15.0f }, 15.0f, MAGENTA);
+    }
+
+    std::string coinText = "x " + std::to_string(playerCoins);
+    DrawText(coinText.c_str(), (int)xPos + 90, (int)yPos + 20, 24, GOLD);
 
     // --- 2. Kite Display & Stats ---
     DrawText(current.name.c_str(), screenWidth / 2 - MeasureText(current.name.c_str(), 50) / 2, 130, 50, WHITE);
@@ -164,6 +179,9 @@ KiteProfile ShopManager::GetEquippedKite() {
 
 void ShopManager::Unload() {
     if (bgTexture.id > 0) UnloadTexture(bgTexture);
-    if (coinTexture.id > 0) UnloadTexture(coinTexture);
-    for (auto& kite : kites) if (kite.texture.id > 0) UnloadTexture(kite.texture);
+    if (uiCoinIcon.id > 0) UnloadTexture(uiCoinIcon); // Add this line
+    
+    for (auto& kite : kites) {
+        if (kite.texture.id > 0) UnloadTexture(kite.texture);
+    }
 }

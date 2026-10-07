@@ -4,9 +4,11 @@ AudioManager::AudioManager() {
     // Load Music
     gameBgm = LoadMusicStream("assets/bgm.mp3");
     menuBgm = LoadMusicStream("assets/menu_bgm.mp3");
+    victoryBgm = LoadMusicStream("assets/victory_bgm.mp3");
     
     SetMusicVolume(gameBgm, 0.5f);
     SetMusicVolume(menuBgm, 1.0f);
+    SetMusicVolume(victoryBgm, 0.8f);
     
     currentBgm = nullptr;
     lastHornbillTime = 0.0;
@@ -27,7 +29,7 @@ AudioManager::AudioManager() {
     SetSoundVolume(sfxHornbill, 0.9f);
     SetSoundVolume(sfxCoin, 0.8f);
     SetSoundVolume(sfxPurchase, 1.0f);
-    SetSoundVolume(sfxWind, 0.7f);
+    SetSoundVolume(sfxWind, 1.5f);
     SetSoundVolume(sfxSnap, 1.5f);
 }
 
@@ -46,6 +48,12 @@ void AudioManager::PlayMenuBGM() {
 void AudioManager::PlayGameBGM() {
     if (currentBgm != nullptr) StopMusicStream(*currentBgm);
     currentBgm = &gameBgm;
+    PlayMusicStream(*currentBgm);
+}
+
+void AudioManager::PlayVictoryBGM() {
+    if (currentBgm != nullptr) StopMusicStream(*currentBgm);
+    currentBgm = &victoryBgm;
     PlayMusicStream(*currentBgm);
 }
 
@@ -73,6 +81,7 @@ void AudioManager::PlayHornbill() {
 void AudioManager::PlayCoin() { PlaySound(sfxCoin); }
 void AudioManager::PlayPurchase() { PlaySound(sfxPurchase); }
 void AudioManager::PlayWind() { PlaySound(sfxWind); }
+void AudioManager::StopWind() { StopSound(sfxWind); }
 void AudioManager::PlaySnap() { 
     // Randomize pitch between 0.95 and 1.10 for dynamic feedback
     SetSoundPitch(sfxSnap, 0.95f + ((float)GetRandomValue(0, 15) / 100.0f));
@@ -82,6 +91,7 @@ void AudioManager::PlaySnap() {
 void AudioManager::Unload() {
     UnloadMusicStream(gameBgm);
     UnloadMusicStream(menuBgm);
+    UnloadMusicStream(victoryBgm);
     UnloadSound(sfxHit);
     UnloadSound(sfxItem);
     UnloadSound(sfxHornbill);

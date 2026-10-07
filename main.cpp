@@ -59,7 +59,7 @@ int main() {
     WindForce wind;
     KipasSatay kipas;
 
-    const float NORMAL_BG_SPEED = 30.0f;
+    const float NORMAL_BG_SPEED = 1000.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
     // Initialize State Machine
@@ -169,7 +169,7 @@ int main() {
                 audio.PlayWind(); 
             }
 
-            kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft());
+            kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
             kid.Update(dt, wau.pos, wind.GetForce());
             scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
             spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
@@ -196,14 +196,15 @@ int main() {
             // Trigger the game over screen when the kid drops out of view
             if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
                 gameState = GAMEOVER;
-
+                audio.StopWind();
                 audio.StopBGM();
             }
 
             if (bg.IsAtTop()) {
                 gameState = VICTORY;
-
+                audio.StopWind();
                 audio.StopBGM();
+                audio.PlayVictoryBGM();
             }
         }
         else if (gameState == GAMEOVER || gameState == VICTORY) {

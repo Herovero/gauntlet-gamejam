@@ -5,6 +5,7 @@ class AudioManager {
 private:
     Music menuBgm;
     Music gameBgm;
+    Music victoryBgm;
     
     Sound sfxHit;
     Sound sfxItem;
@@ -25,6 +26,7 @@ public:
     
     void PlayMenuBGM();
     void PlayGameBGM();
+    void PlayVictoryBGM();
     void StopBGM();
 
     void PlayHit();
@@ -33,6 +35,7 @@ public:
     void PlayCoin();
     void PlayPurchase();
     void PlayWind();
+    void StopWind();
     void PlaySnap();
 
     void Unload();

@@ -12,8 +12,14 @@ KipasSatay::KipasSatay() {
     Reset();
 }
 
-void KipasSatay::Update(float dt, int screenWidth, bool isActive, bool isWindFromLeft) {
-    
+void KipasSatay::Update(float dt, int screenWidth, bool isActive, bool isWindFromLeft, AudioManager& audio) {
+    // Check if it just turned off this exact frame!
+    if (!isActive && lastActive) {
+        audio.StopWind();
+    }
+    // Update the memory for the next frame
+    lastActive = isActive;
+
     // Snap to the correct side if the wind direction changes
     if (isWindFromLeft != lastWindFromLeft) {
         currentX = isWindFromLeft ? -400.0f : (float)screenWidth + 400.0f;
@@ -79,6 +85,7 @@ void KipasSatay::Reset() {
     currentX = -400.0f; 
     targetX = -400.0f;
     lastWindFromLeft = true;
+    lastActive = false;
 }
 
 void KipasSatay::Unload() {

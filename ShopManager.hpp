@@ -20,7 +20,7 @@ public:
     int equippedIndex;
 
     Texture2D bgTexture;
-    Texture2D coinTexture;
+    Texture2D uiCoinIcon;
 
     float currentX;
     float targetX;

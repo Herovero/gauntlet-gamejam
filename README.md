@@ -39,6 +39,8 @@ https://youtu.be/yMYRapTqHVM
 Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=5930">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=5930">Pixabay</a>
 https://youtu.be/wBlSXvyKNKw
 https://www.youtube.com/watch?v=PpvWPF1p6lA
+https://youtu.be/u8ZaMQIF9uM?list=RDu8ZaMQIF9uM
+https://youtu.be/7CCNeiD10ys?list=RD7CCNeiD10ys
 
 
 
