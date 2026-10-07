@@ -49,8 +49,6 @@ int main() {
 
     Texture2D gameTitle = LoadTexture("assets/game_title.png");
 
-    WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
-    SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", "assets/kid_swinging.png");
     VirtualCanvas canvas(screenWidth, screenHeight);
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
@@ -60,6 +58,10 @@ int main() {
     ParticleManager particleManager;
     WindForce wind;
     KipasSatay kipas;
+
+    float currentStringLength = shopManager.GetEquippedKite().stringLength;
+    WauBulan wau(screenWidth / 2.0f, screenHeight - 600.0f, "assets/waubulan.png");
+    SwingingKid kid(wau.pos, "assets/kid_swinging.png", "assets/kid_falling.png", currentStringLength);
 
     const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
@@ -74,8 +76,7 @@ int main() {
 
     // Set up the menu positions
     wau.pos = { (float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f };
-    kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
-    kid.isOnGround = false;
+    kid.pos = { wau.pos.x, wau.pos.y + currentStringLength };
 
     // Main Game Loop
     // WindowShouldClose() returns true if pressing escape or close buton
@@ -104,17 +105,17 @@ int main() {
                     float t = introTimer / duration;
                     float easeOut = 1.0f - (1.0f - t) * (1.0f - t); 
                     wau.pos.y = startY + (endY - startY) * easeOut;
-                    kid.pos.y = wau.pos.y + 550.0f;
+                    kid.pos.y = wau.pos.y + currentStringLength;
                 } else {
                     wau.pos.y = endY;
-                    kid.pos.y = wau.pos.y + 550.0f;
+                    kid.pos.y = wau.pos.y + currentStringLength;
                     introFinished = true;
                 }
             } 
             // UI Interactions (Only after rising finishes)
             else {
                 wau.pos.y = (screenHeight - 600.0f) + std::sin(GetTime() * 3.0f) * 10.0f;
-                kid.pos.y = wau.pos.y + 550.0f;
+                kid.pos.y = wau.pos.y + currentStringLength;
 
                 bool startHovered = GameUI::IsStartButtonClicked(screenWidth, screenHeight, virtualMousePos);
                 bool shopHovered = GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos);
@@ -122,7 +123,6 @@ int main() {
                 if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                     if (startHovered) {
                         gameState = PLAYING;
-                        kid.isOnGround = false;
 
                         audio.PlayGameBGM();
                         
@@ -130,12 +130,14 @@ int main() {
                         wau.speed = equipped.speed;
                         wau.radius = 25.0f * equipped.sizeMultiplier;
                         wau.ChangeTexture(equipped.texturePath.c_str());
+                        currentStringLength = equipped.stringLength; 
+                        kid.stringLength = currentStringLength;
                         
                         // Drop them down to the correct gameplay starting position
                         wau.pos.x = (float)screenWidth / 2.0f;
                         wau.pos.y = screenHeight - 600.0f; 
                         kid.pos.x = wau.pos.x;
-                        kid.pos.y = wau.pos.y + 550.0f;
+                        kid.pos.y = wau.pos.y + currentStringLength;
                     } 
                     else if (shopHovered) {
                         gameState = SHOP;
@@ -244,8 +246,7 @@ int main() {
                     wau.ChangeTexture(equipped.texturePath.c_str());
                     
                     wau.pos.y = screenHeight - 600.0f; 
-                    kid.pos.y = wau.pos.y + 550.0f;
-                    kid.isOnGround = false;
+                    kid.pos.y = wau.pos.y + currentStringLength;
                 }
                 else if (menuHovered) {
                     gameState = MENU;

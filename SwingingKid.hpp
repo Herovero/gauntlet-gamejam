@@ -11,12 +11,10 @@ class SwingingKid {
 
         Texture2D texture;
         Texture2D texFalling;
-        Texture2D texStanding;
 
         bool isDetached;
-        bool isOnGround;
 
-        SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, const char* standingPath);
+        SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, float initialStringLength);
         void Update(float dt, Vector2 anchorPos, float windForce);
         void Draw(Vector2 anchorPos, float invincibleTimer = 0.0f);
         void Detach(float wauPosX);

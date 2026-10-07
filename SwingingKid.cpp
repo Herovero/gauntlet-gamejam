@@ -1,32 +1,25 @@
 #include "SwingingKid.hpp"
 #include <cmath>
 
-SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, const char* standingPath) {
+SwingingKid::SwingingKid(Vector2 anchorPos, const char* normalPath, const char* fallingPath, float initialStringLength) {
     pos = { anchorPos.x, anchorPos.y + 120.0f };
     velocity = { 0.0f, 0.0f };
     radius = 20.0f;
-    stringLength = 500.0f;
+    stringLength = initialStringLength;
     gravity = 1200.0f;
     isDetached = false;
-    isOnGround = false;
 
     texture = LoadTexture(normalPath);
     texFalling = LoadTexture(fallingPath);
-    texStanding = LoadTexture(standingPath);
 
     GenTextureMipmaps(&texture);
     GenTextureMipmaps(&texFalling);
-    GenTextureMipmaps(&texStanding);
 
     SetTextureFilter(texture, TEXTURE_FILTER_TRILINEAR);
     SetTextureFilter(texFalling, TEXTURE_FILTER_TRILINEAR);
-    SetTextureFilter(texStanding, TEXTURE_FILTER_TRILINEAR);
 }
 
 void SwingingKid::Update(float dt, Vector2 anchorPos, float windForce) {
-    // Skip physics while on main menu
-    if (isOnGround) return;
-
     // Add gravity
     velocity.y += gravity * dt;
 
@@ -83,7 +76,7 @@ void SwingingKid::Draw(Vector2 anchorPos, float invincibleTimer) {
 
     // Calculate rotation based on the string angle
     float rotation = 0.0f;
-    if (!isDetached && !isOnGround) {
+    if (!isDetached) {
         float dx = pos.x - anchorPos.x;
         float dy = pos.y - anchorPos.y;
         
@@ -99,8 +92,7 @@ void SwingingKid::Draw(Vector2 anchorPos, float invincibleTimer) {
 
     // Pick active texture based on state
     Texture2D currentTex = texture;
-    if (isOnGround && texStanding.id > 0) currentTex = texStanding;
-    else if (isDetached && texFalling.id > 0) currentTex = texFalling;
+    if (isDetached && texFalling.id > 0) currentTex = texFalling;
 
     if (currentTex.id > 0 && currentTex.width > 0) {
         float renderWidth = radius * 2.5f;
@@ -144,5 +136,4 @@ void SwingingKid::TryReattach(Vector2 virtualMousePos, float wauPosX, float wauP
 void SwingingKid::Unload() {
     if (texture.id > 0) UnloadTexture(texture);
     if (texFalling.id > 0) UnloadTexture(texFalling);
-    if (texStanding.id > 0) UnloadTexture(texStanding);
 }

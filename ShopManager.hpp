@@ -8,7 +8,8 @@ struct KiteProfile {
     std::string texturePath;
     Texture2D texture;
     float speed;            
-    float sizeMultiplier;   
+    float sizeMultiplier;
+    float stringLength;
     int price;
     bool isUnlocked;
 };

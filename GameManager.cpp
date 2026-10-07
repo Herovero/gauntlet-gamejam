@@ -17,5 +17,4 @@ void GameManager::ResetGame(int screenWidth, int screenHeight, WauBulan& wau, Sw
     kid.pos = { (float)screenWidth / 2.0f, (float)screenHeight - 50.0f };
     kid.velocity = { 0.0f, 0.0f };
     kid.isDetached = false;
-    kid.isOnGround = true;
 }

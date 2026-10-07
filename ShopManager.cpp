@@ -29,11 +29,11 @@ ShopManager::ShopManager() {
     Texture2D t5 = LoadTexture("assets/waubulan5.png");
     GenTextureMipmaps(&t5); SetTextureFilter(t5, TEXTURE_FILTER_TRILINEAR);
 
-    kites.push_back({"Wau Klasik", "assets/waubulan.png", t1, 250.0f, 1.0f, 0, true});
-    kites.push_back({"Wau Perintis", "assets/waubulan2.png", t2, 320.0f, 1.2f, 3, false});
-    kites.push_back({"Wau Samudera", "assets/waubulan3.png", t3, 370.0f, 1.1f, 5, false});
-    kites.push_back({"Wau Zamrud", "assets/waubulan4.png", t4, 400.0f, 0.8f, 10, false});
-    kites.push_back({"Wau Purnama", "assets/waubulan5.png", t5, 500.0f, 1.5f, 20, false});
+    kites.push_back({"Wau Klasik", "assets/waubulan.png", t1, 250.0f, 1.0f, 550.0f, 0, true});
+    kites.push_back({"Wau Perintis", "assets/waubulan2.png", t2, 320.0f, 1.2f, 500.0f, 3, false});
+    kites.push_back({"Wau Samudera", "assets/waubulan3.png", t3, 370.0f, 1.1f, 450.0f, 5, false});
+    kites.push_back({"Wau Zamrud", "assets/waubulan4.png", t4, 400.0f, 0.8f, 350.0f, 10, false});
+    kites.push_back({"Wau Purnama", "assets/waubulan5.png", t5, 500.0f, 1.5f, 250.0f, 20, false});
 }
 
 void ShopManager::Update(int& playerCoins, bool& returnToMenu, float dt, int screenWidth, Vector2 virtualMousePos) {
@@ -119,6 +119,7 @@ void ShopManager::Draw(int screenWidth, int screenHeight, int playerCoins, Vecto
     DrawText(current.name.c_str(), screenWidth / 2 - MeasureText(current.name.c_str(), 50) / 2, 130, 50, WHITE);
     DrawText(TextFormat("Speed: %.0f", current.speed), screenWidth / 2 - 100, 220, 25, RAYWHITE);
     DrawText(TextFormat("Size: %.1fx", current.sizeMultiplier), screenWidth / 2 - 100, 260, 25, RAYWHITE);
+    DrawText(TextFormat("String: %.0fm", current.stringLength), screenWidth / 2 - 100, 300, 25, RAYWHITE);
 
     if (current.texture.id > 0) {
         float renderWidth = 200.0f * current.sizeMultiplier; 
