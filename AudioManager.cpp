@@ -7,8 +7,8 @@ AudioManager::AudioManager() {
     victoryBgm = LoadMusicStream("assets/victory_bgm.mp3");
     
     SetMusicVolume(gameBgm, 0.5f);
-    SetMusicVolume(menuBgm, 1.0f);
-    SetMusicVolume(victoryBgm, 0.8f);
+    SetMusicVolume(menuBgm, 0.5f);
+    SetMusicVolume(victoryBgm, 0.7f);
     
     currentBgm = nullptr;
     lastHornbillTime = 0.0;

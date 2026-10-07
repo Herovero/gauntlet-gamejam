@@ -11,6 +11,7 @@
 #include "ScoreManager.hpp"
 #include "CoinManager.hpp"
 #include "ShopManager.hpp"
+#include "ParticleManager.hpp"
 #include "ItemSpawner.hpp"
 #include "WindForce.hpp"
 #include "KipasSatay.hpp"
@@ -56,10 +57,11 @@ int main() {
     ScoreManager scoreManager;
     CoinManager coinManager;
     ShopManager shopManager;
+    ParticleManager particleManager;
     WindForce wind;
     KipasSatay kipas;
 
-    const float NORMAL_BG_SPEED = 1000.0f;
+    const float NORMAL_BG_SPEED = 30.0f;
     const float BOOST_BG_SPEED = 150.0f;
 
     // Initialize State Machine
@@ -67,6 +69,8 @@ int main() {
 
     float introTimer = 0.0f;
     bool introFinished = false;
+
+    float hitStopTimer = 0.0f;
 
     // Set up the menu positions
     wau.pos = { (float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f };
@@ -156,55 +160,69 @@ int main() {
             }
         }
         else if (gameState == PLAYING) {
-            // Apply boost speed if active
-            bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
-            bg.Update(dt);
+            if (hitStopTimer > 0.0f) {
+                // Freeze frame: Decrement timer, skip all game logic updates
+                hitStopTimer -= GetFrameTime();
+            } else {
+                // Apply boost speed if active
+                bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
+                bg.Update(dt);
 
-            if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
-            else wau.pos.y += 400.0f * dt;
-            
-            bool windWasActive = wind.IsActive();
-            wind.Update(dt);
-            if (!windWasActive && wind.IsActive()) {
-                audio.PlayWind(); 
-            }
+                if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
+                else wau.pos.y += 400.0f * dt;
+                
+                bool windWasActive = wind.IsActive();
+                wind.Update(dt);
+                if (!windWasActive && wind.IsActive()) {
+                    audio.PlayWind(); 
+                }
 
-            kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
-            kid.Update(dt, wau.pos, wind.GetForce());
-            scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
-            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
-            itemSpawner.Update(dt);
+                kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
+                kid.Update(dt, wau.pos, wind.GetForce());
+                scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
+                spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
+                itemSpawner.Update(dt);
+                particleManager.Update(dt);
 
-            CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, audio);
+                int coinsBefore = coinManager.totalCoins; // Check balance before collisions
 
-            // Check obstacle collisions
-            if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
-                audio.PlayHit();
-                kid.Detach(wau.pos.x);
-            }
+                CollisionManager::HandleItemCollections(wau, kid, itemSpawner, scoreManager, coinManager, audio);
 
-            // Check for string recovery
-            bool wasDetached = kid.isDetached;
+                // If the balance went up, trigger the burst at the kite's position
+                if (coinManager.totalCoins > coinsBefore) {
+                    particleManager.EmitCoinBurst(wau.pos);
+                }
 
-            kid.TryReattach(virtualMousePos, wau.pos.x, wau.pos.y, wau.radius, wau.invincibleTimer, scoreManager.stringCharges);
+                // Check obstacle collisions
+                if (!kid.isDetached && wau.invincibleTimer <= 0.0f && CollisionManager::CheckPlayerCollisions(wau, kid, spawner)) {
+                    audio.PlayHit();
+                    kid.Detach(wau.pos.x);
+                    hitStopTimer = 0.1f;
+                }
 
-            // If they were detached but aren't anymore, the catch was successful!
-            if (wasDetached && !kid.isDetached) {
-                audio.PlaySnap();
-            }
+                // Check for string recovery
+                bool wasDetached = kid.isDetached;
 
-            // Trigger the game over screen when the kid drops out of view
-            if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
-                gameState = GAMEOVER;
-                audio.StopWind();
-                audio.StopBGM();
-            }
+                kid.TryReattach(virtualMousePos, wau.pos.x, wau.pos.y, wau.radius, wau.invincibleTimer, scoreManager.stringCharges);
 
-            if (bg.IsAtTop()) {
-                gameState = VICTORY;
-                audio.StopWind();
-                audio.StopBGM();
-                audio.PlayVictoryBGM();
+                // If they were detached but aren't anymore, the catch was successful!
+                if (wasDetached && !kid.isDetached) {
+                    audio.PlaySnap();
+                }
+
+                // Trigger the game over screen when the kid drops out of view
+                if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
+                    gameState = GAMEOVER;
+                    audio.StopWind();
+                    audio.StopBGM();
+                }
+
+                if (bg.IsAtTop()) {
+                    gameState = VICTORY;
+                    audio.StopWind();
+                    audio.StopBGM();
+                    audio.PlayVictoryBGM();
+                }
             }
         }
         else if (gameState == GAMEOVER || gameState == VICTORY) {
@@ -268,6 +286,7 @@ int main() {
                     kid.Draw(wau.pos, wau.invincibleTimer);
                     spawner.Draw();
                     itemSpawner.Draw();
+                    particleManager.Draw();
                     scoreManager.Draw();
                     coinManager.Draw(screenWidth);
                 } 
