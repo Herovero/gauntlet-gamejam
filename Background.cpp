@@ -22,13 +22,18 @@ Background::Background(const char* imagePath, int screenWidth, int screenHeight,
 
 // Scroll down
 void Background::Update(float dt) {
-    if (scrollY < 0.0f) {
-        scrollY += scrollSpeed * dt;
+    // 1. Always apply the speed first (works for both positive and negative scroll speeds)
+    scrollY += scrollSpeed * dt;
 
-        // Clamp it to 0 so it doesn't keep scrolling past the moon
-        if (scrollY > 0.0f) {
-            scrollY = 0.0f;
-        }
+    // 2. Clamp it to 0 so it doesn't keep scrolling past the moon (Top limit)
+    if (scrollY > 0.0f) {
+        scrollY = 0.0f;
+    }
+
+    // 3. Clamp it to the starting position so it doesn't fly off-screen during rewind (Bottom limit)
+    float startPos = (float)screenHeight - drawHeight;
+    if (scrollY < startPos) {
+        scrollY = startPos;
     }
 }
 

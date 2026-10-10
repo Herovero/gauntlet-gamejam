@@ -22,7 +22,11 @@ enum GameState {
     SHOP,
     PLAYING,
     GAMEOVER,
-    VICTORY
+    VICTORY,
+    WAITING_TO_REWIND,
+    REWINDING,
+    FALLING_DOWN,
+    RISING
 };
 
 int main() {
@@ -72,6 +76,7 @@ int main() {
 
     float introTimer = 0.0f;
     bool introFinished = false;
+    bool skipFall = false;
 
     float hitStopTimer = 0.0f;
 
@@ -217,9 +222,11 @@ int main() {
 
                 // Trigger the game over screen when the kid drops out of view
                 if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
-                    gameState = GAMEOVER;
+                    // Check if they fall before progressing past 1 screen height
+                    skipFall = (scoreManager.currentAltitude < 160.0f);
+                    gameState = WAITING_TO_REWIND;
+                    introTimer = 0.0f;
                     audio.StopWind();
-                    audio.StopBGM();
                 }
 
                 if (bg.IsAtTop()) {
@@ -228,6 +235,129 @@ int main() {
                     audio.StopBGM();
                     audio.PlayVictoryBGM();
                 }
+            }
+        }
+        else if (gameState == WAITING_TO_REWIND) {
+            // Let the background and kite coast naturally for 1.5 seconds
+            bg.Update(dt);
+            wau.pos.y += 400.0f * dt;
+            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
+            itemSpawner.Update(dt, dt);
+            particleManager.Update(dt);
+            
+            introTimer += dt;
+            if (introTimer >= 0.5f) { 
+                gameState = REWINDING;
+                
+                // Instantly clear the board so nothing is on screen during the rewind
+                spawner.Reset();
+                itemSpawner.Reset();
+            }
+        }
+        else if (gameState == REWINDING) {
+            float rewindSpeed = 3000.0f; 
+            bg.scrollSpeed = -rewindSpeed;
+            bg.Update(dt);
+            
+            scoreManager.currentAltitude -= rewindSpeed * dt;
+            if (scoreManager.currentAltitude < 0.0f) {
+                scoreManager.currentAltitude = 0.0f;
+            }
+            
+            // REMOVED spawner and itemSpawner updates here! They are now invisible.
+
+            float startPos = (float)screenHeight - bg.drawHeight;
+            if (scoreManager.currentAltitude <= 0.0f && bg.scrollY <= startPos) {
+                scoreManager.currentAltitude = 0.0f;
+                
+                wind.Reset();
+                kipas.Reset();
+                scoreManager.stringCharges = 3;
+                
+                bg.Reset(); 
+                
+                KiteProfile equipped = shopManager.GetEquippedKite();
+                wau.speed = equipped.speed;
+                wau.radius = 25.0f * equipped.sizeMultiplier;
+                wau.ChangeTexture(equipped.texturePath.c_str());
+                currentStringLength = equipped.stringLength; 
+                kid.stringLength = currentStringLength;
+                
+                introTimer = 0.0f; 
+                
+                if (skipFall) {
+                    wau.pos.y = screenHeight + 200.0f;
+                    kid.pos.x = wau.pos.x;
+                    kid.pos.y = wau.pos.y + currentStringLength;
+                    
+                    kid.isDetached = false;
+                    gameState = RISING;
+                } else {
+                    wau.pos.y = -200.0f;
+                    kid.pos.y = -400.0f; 
+                
+                    kid.isDetached = true;
+                    gameState = FALLING_DOWN;
+                }
+            }
+        }
+        else if (gameState == FALLING_DOWN) {
+            introTimer += dt;
+            
+            float fallDuration = 2.5f; 
+            float wauStartY = -200.0f;
+            float kidStartY = -400.0f;
+            float endY = screenHeight + 200.0f; 
+
+            if (introTimer < fallDuration) {
+                float t = introTimer / fallDuration;
+                float easeIn = t * t; 
+                
+                wau.pos.y = wauStartY + (endY - wauStartY) * easeIn;
+                kid.pos.y = kidStartY + (endY - kidStartY) * easeIn;
+            } else {
+                wau.pos.y = endY;
+                kid.pos.y = wau.pos.y + currentStringLength;
+                
+                kid.pos.x = wau.pos.x; 
+                
+                kid.isDetached = false; 
+                
+                gameState = RISING;
+                introTimer = 0.0f; 
+            }
+        }
+        else if (gameState == RISING) {
+            //bg.scrollSpeed = NORMAL_BG_SPEED;
+            bg.Update(dt);
+            
+            introTimer += dt;
+            
+            float waitDuration = 1.0f;     // 1-second pause at the bottom
+            float flightDuration = 1.5f;   // 1.5-second cinematic rise
+            float totalDuration = waitDuration + flightDuration;
+            
+            float startY = screenHeight + 200.0f;
+            float endY = screenHeight - 600.0f;
+
+            // Phase 1: Wait hidden at the bottom of the screen
+            if (introTimer < waitDuration) {
+                wau.pos.y = startY;
+                kid.pos.y = wau.pos.y + currentStringLength;
+            }
+            // Phase 2: Smoothly fly up from the bottom of the screen
+            else if (introTimer < totalDuration) {
+                float t = (introTimer - waitDuration) / flightDuration;
+                float easeOut = 1.0f - (1.0f - t) * (1.0f - t); 
+                
+                wau.pos.y = startY + (endY - startY) * easeOut;
+                kid.pos.y = wau.pos.y + currentStringLength;
+            } 
+            // Phase 3: Give control back
+            else {
+                wau.pos.y = endY;
+                kid.pos.y = wau.pos.y + currentStringLength;
+                gameState = PLAYING;
             }
         }
         else if (gameState == GAMEOVER || gameState == VICTORY) {
@@ -283,7 +413,7 @@ int main() {
                 ClearBackground(SKYBLUE);
                 bg.Draw();
 
-                if (gameState == PLAYING) {
+                if (gameState == PLAYING || gameState == WAITING_TO_REWIND) {
                     wau.Draw();
                     wind.Draw(screenWidth);
                     kipas.Draw(screenHeight, wind.IsActive(), wind.IsWindFromLeft());
@@ -304,7 +434,14 @@ int main() {
                         DrawRectangle(0, 0, screenWidth, screenHeight, Fade(SKYBLUE, 0.25f));
                         DrawRectangleLinesEx({0, 0, (float)screenWidth, (float)screenHeight}, 10.0f, Fade(WHITE, 0.4f));
                     }
-                } 
+                }
+                else if (gameState == REWINDING) {
+
+                }
+                else if (gameState == FALLING_DOWN || gameState == RISING) {
+                    wau.Draw();
+                    kid.Draw(wau.pos, wau.invincibleTimer);
+                }
                 else if (gameState == GAMEOVER) {
                     scoreManager.DrawGameOver(screenWidth, screenHeight);
 
