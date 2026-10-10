@@ -25,12 +25,14 @@ AudioManager::AudioManager() {
     sfxPurchase = LoadSound("assets/purchase_sfx.wav");
     sfxWind = LoadSound("assets/wind_sfx.wav");
     sfxSnap = LoadSound("assets/snap_sfx.wav");
+    sfxFreeze = LoadSound("assets/frozen_sfx.wav");
     
     SetSoundVolume(sfxHornbill, 0.9f);
     SetSoundVolume(sfxCoin, 0.8f);
     SetSoundVolume(sfxPurchase, 1.0f);
     SetSoundVolume(sfxWind, 1.5f);
     SetSoundVolume(sfxSnap, 1.5f);
+    SetSoundVolume(sfxFreeze, 1.0f);
 }
 
 void AudioManager::Update() {
@@ -87,6 +89,7 @@ void AudioManager::PlaySnap() {
     SetSoundPitch(sfxSnap, 0.95f + ((float)GetRandomValue(0, 15) / 100.0f));
     PlaySound(sfxSnap); 
 }
+void AudioManager::PlayFreeze() { PlaySound(sfxFreeze); }
 
 void AudioManager::Unload() {
     UnloadMusicStream(gameBgm);
@@ -99,4 +102,5 @@ void AudioManager::Unload() {
     UnloadSound(sfxPurchase);
     UnloadSound(sfxWind);
     UnloadSound(sfxSnap);
+    UnloadSound(sfxFreeze);
 }

@@ -14,6 +14,7 @@ private:
     Sound sfxPurchase;
     Sound sfxWind;
     Sound sfxSnap;
+    Sound sfxFreeze;
 
     Music* currentBgm;
 
@@ -37,6 +38,7 @@ public:
     void PlayWind();
     void StopWind();
     void PlaySnap();
+    void PlayFreeze();
 
     void Unload();
 };

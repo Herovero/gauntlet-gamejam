@@ -48,6 +48,7 @@ int main() {
     Background menuBg("assets/skybackground.png", screenWidth, screenHeight, 150.0f);
 
     Texture2D gameTitle = LoadTexture("assets/game_title.png");
+    Texture2D frozenBg = LoadTexture("assets/frozen_bg.png");
 
     VirtualCanvas canvas(screenWidth, screenHeight);
     ObstacleSpawner spawner(screenWidth, screenHeight);
@@ -166,24 +167,26 @@ int main() {
                 // Freeze frame: Decrement timer, skip all game logic updates
                 hitStopTimer -= GetFrameTime();
             } else {
+                float envDt = itemSpawner.IsSlowMoActive() ? (dt * 0.1f) : dt; // 50% speed reduction
+
                 // Apply boost speed if active
                 bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
-                bg.Update(dt);
+                bg.Update(envDt);
 
                 if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
                 else wau.pos.y += 400.0f * dt;
                 
                 bool windWasActive = wind.IsActive();
-                wind.Update(dt);
+                wind.Update(envDt);
                 if (!windWasActive && wind.IsActive()) {
                     audio.PlayWind(); 
                 }
 
-                kipas.Update(dt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
+                kipas.Update(envDt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
                 kid.Update(dt, wau.pos, wind.GetForce());
                 scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
-                spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
-                itemSpawner.Update(dt);
+                spawner.Update(envDt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
+                itemSpawner.Update(dt, envDt);
                 particleManager.Update(dt);
 
                 int coinsBefore = coinManager.totalCoins; // Check balance before collisions
@@ -290,6 +293,17 @@ int main() {
                     particleManager.Draw();
                     scoreManager.Draw();
                     coinManager.Draw(screenWidth);
+
+                    if (itemSpawner.IsSlowMoActive()) {
+                        // Draw the cracked ice background texture over the screen
+                        Rectangle source = { 0.0f, 0.0f, (float)frozenBg.width, (float)frozenBg.height };
+                        Rectangle dest = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight };
+                        DrawTexturePro(frozenBg, source, dest, { 0.0f, 0.0f }, 0.0f, Fade(WHITE, 0.3f));
+
+                        // Creates a chill frost overlay using Raylib's Fade function
+                        DrawRectangle(0, 0, screenWidth, screenHeight, Fade(SKYBLUE, 0.25f));
+                        DrawRectangleLinesEx({0, 0, (float)screenWidth, (float)screenHeight}, 10.0f, Fade(WHITE, 0.4f));
+                    }
                 } 
                 else if (gameState == GAMEOVER) {
                     scoreManager.DrawGameOver(screenWidth, screenHeight);
@@ -318,6 +332,7 @@ int main() {
     shopManager.Unload();
 
     UnloadTexture(gameTitle);
+    UnloadTexture(frozenBg);
     audio.Unload();
     CloseAudioDevice();
     CloseWindow(); 
