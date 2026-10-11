@@ -3,6 +3,7 @@
 #include "RewindSystem.hpp"
 #include "GameplaySystem.hpp"
 #include "MenuSystem.hpp"
+#include "OverlaySystem.hpp"
 #include "RenderSystem.hpp"
 #include "GameManager.hpp"
 #include "AudioManager.hpp"
@@ -104,37 +105,10 @@ int main() {
             gameState = rewindSystem.UpdateRising(dt, bg, wau, kid, currentStringLength, screenHeight);
         }
         else if (gameState == PAUSED || gameState == VICTORY) {
-            bool resumeHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
-            bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
-
-            if (gameState == PAUSED && (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P))) {
-                gameState = PLAYING;
-            }
-
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (resumeHovered) {
-                    gameState = PLAYING;
-                    if (gameState == VICTORY) {
-                        audio.PlayGameBGM();
-                        GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, scoreManager, coinManager, wind, kipas);
-                        KiteProfile equipped = shopManager.GetEquippedKite();
-                        wau.speed = equipped.speed;
-                        wau.radius = 25.0f * equipped.sizeMultiplier;
-                        wau.ChangeTexture(equipped.texturePath.c_str());
-                        wau.pos.y = screenHeight - 600.0f; 
-                        kid.pos.y = wau.pos.y + currentStringLength;
-                    }
-                }
-                else if (menuHovered) {
-                    gameState = MENU;
-                    audio.PlayMenuBGM();
-                    GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, scoreManager, coinManager, wind, kipas);
-                    menuIntroTimer = 0.0f;
-                    introFinished = false;
-                    wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
-                    kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
-                }
-            }
+            gameState = OverlaySystem::Update(gameState, screenWidth, screenHeight, virtualMousePos, 
+                                              audio, wau, kid, bg, spawner, itemSpawner, scoreManager, 
+                                              coinManager, wind, kipas, shopManager, menuIntroTimer, 
+                                              introFinished, currentStringLength);
         }
 
         // Moved to RenderSystem
