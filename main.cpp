@@ -21,7 +21,7 @@ enum GameState {
     MENU,
     SHOP,
     PLAYING,
-    GAMEOVER,
+    PAUSED,
     VICTORY,
     WAITING_TO_REWIND,
     REWINDING,
@@ -36,6 +36,9 @@ int main() {
 
     // Run the window and show title
     InitWindow(screenWidth, screenHeight, "Wau Bulan Rising");
+
+    // Disable the default ESC = Close Window behavior
+    SetExitKey(KEY_NULL);
 
     // Enable resizing and configure the window
     SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -168,6 +171,11 @@ int main() {
             }
         }
         else if (gameState == PLAYING) {
+            if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P)) {
+                gameState = PAUSED;
+                audio.StopWind();
+            }
+
             if (hitStopTimer > 0.0f) {
                 // Freeze frame: Decrement timer, skip all game logic updates
                 hitStopTimer -= GetFrameTime();
@@ -360,7 +368,35 @@ int main() {
                 gameState = PLAYING;
             }
         }
-        else if (gameState == GAMEOVER || gameState == VICTORY) {
+        else if (gameState == PAUSED) {
+            // We can reuse the endgame buttons. "Restart" will act as our "Resume" button here.
+            bool resumeHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
+            bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
+
+            // Allow unpausing with the keyboard
+            if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P)) {
+                gameState = PLAYING;
+            }
+
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (resumeHovered) {
+                    gameState = PLAYING; // Just resume the game!
+                }
+                else if (menuHovered) {
+                    gameState = MENU;
+                    audio.PlayMenuBGM();
+                    
+                    GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
+                        scoreManager, coinManager, wind, kipas);
+                    
+                    introTimer = 0.0f;
+                    introFinished = false;
+                    wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
+                    kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
+                }
+            }
+        }
+        else if (gameState == VICTORY) {
             bool restartHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
             bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
 
@@ -372,7 +408,6 @@ int main() {
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
                         
-                    // Re-apply equipped kite stats directly for a fast restart
                     KiteProfile equipped = shopManager.GetEquippedKite();
                     wau.speed = equipped.speed;
                     wau.radius = 25.0f * equipped.sizeMultiplier;
@@ -388,7 +423,6 @@ int main() {
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
                     
-                    // Reset Intro Animation State for the menu
                     introTimer = 0.0f;
                     introFinished = false;
                     wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
@@ -442,17 +476,31 @@ int main() {
                     wau.Draw();
                     kid.Draw(wau.pos, wau.invincibleTimer);
                 }
-                else if (gameState == GAMEOVER) {
-                    scoreManager.DrawGameOver(screenWidth, screenHeight);
+                else if (gameState == PAUSED) {
+                    // 1. Draw the frozen game state
+                    wau.Draw();
+                    wind.Draw(screenWidth);
+                    kipas.Draw(screenHeight, wind.IsActive(), wind.IsWindFromLeft());
+                    kid.Draw(wau.pos, wau.invincibleTimer);
+                    spawner.Draw();
+                    itemSpawner.Draw();
+                    particleManager.Draw();
+                    scoreManager.Draw();
+                    coinManager.Draw(screenWidth);
 
-                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos);
+                    // 2. Draw a dark semi-transparent overlay
+                    DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
+
+                    // 3. Draw Pause Text and Buttons (Reusing endgame buttons for now)
+                    DrawText("PAUSED", screenWidth / 2 - MeasureText("PAUSED", 60) / 2, screenHeight / 2 - 150, 60, WHITE);
+                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos, true);
                 }
                 else if (gameState == VICTORY) {
                     wau.Draw();
                     kid.Draw(wau.pos);
                     spawner.Draw();
                     GameUI::DrawVictoryScreen(screenWidth, screenHeight);
-                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos);
+                    GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos, false);
                 }
             }
 

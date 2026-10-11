@@ -54,21 +54,24 @@ bool GameUI::IsMainMenuButtonClicked(int screenWidth, int screenHeight, Vector2 
     return CheckCollisionPointRec(virtualMousePos, btn);
 }
 
-void GameUI::DrawEndGameButtons(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
-    // Restart Button (Styled with Wood & Gold)
+void GameUI::DrawEndGameButtons(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool isPaused) {
+    // Restart / Resume Button (Styled with Wood & Gold)
     Rectangle restartBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 40.0f, 200.0f, 46.0f };
     bool restartHover = IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
     Color restartBg = restartHover ? GetColor(0x8D6E63FF) : GetColor(0x4E342EFF);
     DrawRectangleRounded(restartBtn, 0.2f, 4, restartBg);
-    DrawRectangleRoundedLines(restartBtn, 0.2f, 4, restartHover ? GOLD : GetColor(0xD4AF37FF)); // Removed thickness number!
-    DrawText("RESTART", screenWidth / 2 - MeasureText("RESTART", 20) / 2, screenHeight / 2 + 53, 20, RAYWHITE);
+    DrawRectangleRoundedLines(restartBtn, 0.2f, 4, restartHover ? GOLD : GetColor(0xD4AF37FF)); 
+    
+    // Swap text based on the game state
+    const char* topBtnText = isPaused ? "RESUME" : "RESTART";
+    DrawText(topBtnText, screenWidth / 2 - MeasureText(topBtnText, 20) / 2, screenHeight / 2 + 53, 20, RAYWHITE);
 
     // Main Menu Button (Styled with Wood & Gold)
     Rectangle menuBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 100.0f, 200.0f, 46.0f };
     bool menuHover = IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
     Color menuBg = menuHover ? GetColor(0x8D6E63FF) : GetColor(0x4E342EFF);
     DrawRectangleRounded(menuBtn, 0.2f, 4, menuBg);
-    DrawRectangleRoundedLines(menuBtn, 0.2f, 4, menuHover ? GOLD : GetColor(0xD4AF37FF)); // Removed thickness number!
+    DrawRectangleRoundedLines(menuBtn, 0.2f, 4, menuHover ? GOLD : GetColor(0xD4AF37FF)); 
     DrawText("MAIN MENU", screenWidth / 2 - MeasureText("MAIN MENU", 20) / 2, screenHeight / 2 + 113, 20, RAYWHITE);
 }
 
