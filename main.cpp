@@ -16,6 +16,7 @@
 #include "ScoreManager.hpp"
 #include "CoinManager.hpp"
 #include "ShopManager.hpp"
+#include "ShopSystem.hpp"
 #include "ParticleManager.hpp"
 #include "ItemSpawner.hpp"
 #include "WindForce.hpp"
@@ -78,12 +79,8 @@ int main() {
                                            rewindSystem);
         }
         else if (gameState == SHOP) {
-            bool returnToMenu = false;
-            int coinsBefore = coinManager.totalCoins;
-            shopManager.Update(coinManager.totalCoins, returnToMenu, dt, screenWidth, virtualMousePos);
-
-            if (coinManager.totalCoins < coinsBefore) audio.PlayPurchase();
-            if (returnToMenu) gameState = MENU;
+            gameState = ShopSystem::Update(dt, screenWidth, virtualMousePos, shopManager, 
+                                           coinManager, audio, wau, kid, currentStringLength);
         }
         else if (gameState == PLAYING) {
             gameState = GameplaySystem::Update(dt, screenWidth, screenHeight, virtualMousePos, 
