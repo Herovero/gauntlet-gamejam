@@ -22,6 +22,8 @@ public:
 
     // Triggered the moment the player dies
     void TriggerDeath(float altitude);
+
+    void PrepareRising();
     
     // State update functions return the next GameState
     GameState UpdateWaiting(float dt, Background& bg, WauBulan& wau, ObstacleSpawner& spawner, ItemSpawner& itemSpawner, ScoreManager& scoreManager, AudioManager& audio);

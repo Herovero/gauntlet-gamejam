@@ -7,6 +7,11 @@ void RewindSystem::TriggerDeath(float altitude) {
     timer = 0.0f;
 }
 
+void RewindSystem::PrepareRising() {
+    timer = 0.0f;
+    skipFall = true;
+}
+
 GameState RewindSystem::UpdateWaiting(float dt, Background& bg, WauBulan& wau, ObstacleSpawner& spawner, ItemSpawner& itemSpawner, ScoreManager& scoreManager, AudioManager& audio) {
     bg.Update(dt);
     wau.pos.y += 400.0f * dt;
@@ -85,7 +90,14 @@ GameState RewindSystem::UpdateFalling(float dt, WauBulan& wau, SwingingKid& kid,
 }
 
 GameState RewindSystem::UpdateRising(float dt, Background& bg, WauBulan& wau, SwingingKid& kid, float currentStringLength, int screenHeight) {
-    bg.Update(dt);
+    wau.stretchFactor = 1.0f;
+    wau.targetRotation = 0.0f;
+    wau.rotation = 0.0f;
+
+    if (!skipFall) {
+        bg.Update(dt);
+    }
+    
     timer += dt;
     
     float waitDuration = 1.0f;     

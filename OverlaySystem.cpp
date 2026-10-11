@@ -6,7 +6,7 @@ GameState OverlaySystem::Update(GameState currentState, int screenWidth, int scr
                                 AudioManager& audio, WauBulan& wau, SwingingKid& kid, Background& bg,
                                 ObstacleSpawner& spawner, ItemSpawner& itemSpawner, ScoreManager& scoreManager,
                                 CoinManager& coinManager, WindForce& wind, KipasSatay& kipas, ShopManager& shopManager,
-                                float& menuIntroTimer, bool& introFinished, float currentStringLength) {
+                                float& menuIntroTimer, bool& introFinished, float currentStringLength, RewindSystem& rewindSystem) {
     
     bool resumeHovered = GameUI::IsRestartButtonClicked(screenWidth, screenHeight, virtualMousePos);
     bool menuHovered = GameUI::IsMainMenuButtonClicked(screenWidth, screenHeight, virtualMousePos);
@@ -26,8 +26,14 @@ GameState OverlaySystem::Update(GameState currentState, int screenWidth, int scr
                 wau.speed = equipped.speed;
                 wau.radius = 25.0f * equipped.sizeMultiplier;
                 wau.ChangeTexture(equipped.texturePath.c_str());
-                wau.pos.y = screenHeight - 600.0f; 
+
+                // Spawn them hidden at the bottom
+                wau.pos.y = screenHeight + 200.0f; 
                 kid.pos.y = wau.pos.y + currentStringLength;
+
+                // Trigger rising transition
+                rewindSystem.PrepareRising();
+                return RISING;
             }
             return PLAYING; // Resumes immediately if paused, or starts a fresh run if victorious
         }

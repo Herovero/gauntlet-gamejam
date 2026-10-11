@@ -180,7 +180,7 @@ KiteProfile ShopManager::GetEquippedKite() {
 
 void ShopManager::Unload() {
     if (bgTexture.id > 0) UnloadTexture(bgTexture);
-    if (uiCoinIcon.id > 0) UnloadTexture(uiCoinIcon); // Add this line
+    if (uiCoinIcon.id > 0) UnloadTexture(uiCoinIcon);
     
     for (auto& kite : kites) {
         if (kite.texture.id > 0) UnloadTexture(kite.texture);

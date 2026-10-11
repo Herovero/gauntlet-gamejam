@@ -12,6 +12,7 @@
 #include "WindForce.hpp"
 #include "KipasSatay.hpp"
 #include "ShopManager.hpp"
+#include "RewindSystem.hpp"
 
 class OverlaySystem {
 public:
@@ -19,5 +20,5 @@ public:
                             AudioManager& audio, WauBulan& wau, SwingingKid& kid, Background& bg,
                             ObstacleSpawner& spawner, ItemSpawner& itemSpawner, ScoreManager& scoreManager,
                             CoinManager& coinManager, WindForce& wind, KipasSatay& kipas, ShopManager& shopManager,
-                            float& menuIntroTimer, bool& introFinished, float currentStringLength);
+                            float& menuIntroTimer, bool& introFinished, float currentStringLength, RewindSystem& rewindSystem);
 };

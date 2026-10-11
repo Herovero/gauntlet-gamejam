@@ -74,7 +74,8 @@ int main() {
         if (gameState == MENU) {
             gameState = MenuSystem::Update(dt, screenWidth, screenHeight, virtualMousePos,
                                            menuIntroTimer, introFinished, menuBg, wau, kid,
-                                           currentStringLength, shopManager, audio);
+                                           currentStringLength, shopManager, audio, 
+                                           rewindSystem);
         }
         else if (gameState == SHOP) {
             bool returnToMenu = false;
@@ -85,7 +86,6 @@ int main() {
             if (returnToMenu) gameState = MENU;
         }
         else if (gameState == PLAYING) {
-            // Moved to GameplaySystem
             gameState = GameplaySystem::Update(dt, screenWidth, screenHeight, virtualMousePos, 
                                                hitStopTimer, bg, wau, kid, wind, kipas, scoreManager, 
                                                spawner, itemSpawner, particleManager, coinManager, 
@@ -108,10 +108,9 @@ int main() {
             gameState = OverlaySystem::Update(gameState, screenWidth, screenHeight, virtualMousePos, 
                                               audio, wau, kid, bg, spawner, itemSpawner, scoreManager, 
                                               coinManager, wind, kipas, shopManager, menuIntroTimer, 
-                                              introFinished, currentStringLength);
+                                              introFinished, currentStringLength, rewindSystem);
         }
 
-        // Moved to RenderSystem
         canvas.BeginMode();
         RenderSystem::Draw(gameState, screenWidth, screenHeight, virtualMousePos, introFinished, 
                            gameTitle, frozenBg, bg, menuBg, wau, kid, shopManager, coinManager, 

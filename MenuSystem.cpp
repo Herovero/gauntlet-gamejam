@@ -5,7 +5,7 @@
 GameState MenuSystem::Update(float dt, int screenWidth, int screenHeight, Vector2 virtualMousePos,
                              float& menuIntroTimer, bool& introFinished, Background& menuBg,
                              WauBulan& wau, SwingingKid& kid, float& currentStringLength,
-                             ShopManager& shopManager, AudioManager& audio) {
+                             ShopManager& shopManager, AudioManager& audio, RewindSystem& rewindSystem) {
     // 1. Update background
     menuBg.UpdateInfinite(dt);
 
@@ -46,11 +46,12 @@ GameState MenuSystem::Update(float dt, int screenWidth, int screenHeight, Vector
                 
                 // Drop them down to the correct gameplay starting position
                 wau.pos.x = (float)screenWidth / 2.0f;
-                wau.pos.y = screenHeight - 600.0f; 
+                wau.pos.y = screenHeight + 200.0f; 
                 kid.pos.x = wau.pos.x;
                 kid.pos.y = wau.pos.y + currentStringLength;
 
-                return PLAYING;
+                rewindSystem.PrepareRising();
+                return RISING;
             } 
             else if (GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos)) {
                 return SHOP;
