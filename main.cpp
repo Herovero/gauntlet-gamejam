@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include "GameState.hpp"
+#include "RewindSystem.hpp"
 #include "GameManager.hpp"
 #include "AudioManager.hpp"
 #include "WauBulan.hpp"
@@ -16,18 +18,6 @@
 #include "WindForce.hpp"
 #include "KipasSatay.hpp"
 #include <cmath>
-
-enum GameState {
-    MENU,
-    SHOP,
-    PLAYING,
-    PAUSED,
-    VICTORY,
-    WAITING_TO_REWIND,
-    REWINDING,
-    FALLING_DOWN,
-    RISING
-};
 
 int main() {
     // Screen Initialization
@@ -57,6 +47,7 @@ int main() {
     Texture2D gameTitle = LoadTexture("assets/game_title.png");
     Texture2D frozenBg = LoadTexture("assets/frozen_bg.png");
 
+    RewindSystem rewindSystem;
     VirtualCanvas canvas(screenWidth, screenHeight);
     ObstacleSpawner spawner(screenWidth, screenHeight);
     ItemSpawner itemSpawner(screenWidth, screenHeight);
@@ -77,9 +68,8 @@ int main() {
     // Initialize State Machine
     GameState gameState = MENU;
 
-    float introTimer = 0.0f;
+    float menuIntroTimer = 0.0f;
     bool introFinished = false;
-    bool skipFall = false;
 
     float hitStopTimer = 0.0f;
 
@@ -105,13 +95,13 @@ int main() {
 
             // Intro Rising Animation
             if (!introFinished) {
-                introTimer += dt;
+                menuIntroTimer += dt;
                 float duration = 3.0f; 
                 float startY = screenHeight + 200.0f;
                 float endY = screenHeight - 600.0f;
 
-                if (introTimer < duration) {
-                    float t = introTimer / duration;
+                if (menuIntroTimer < duration) {
+                    float t = menuIntroTimer / duration;
                     float easeOut = 1.0f - (1.0f - t) * (1.0f - t); 
                     wau.pos.y = startY + (endY - startY) * easeOut;
                     kid.pos.y = wau.pos.y + currentStringLength;
@@ -230,10 +220,8 @@ int main() {
 
                 // Trigger the game over screen when the kid drops out of view
                 if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {
-                    // Check if they fall before progressing past 1 screen height
-                    skipFall = (scoreManager.currentAltitude < 160.0f);
+                    rewindSystem.TriggerDeath(scoreManager.currentAltitude);
                     gameState = WAITING_TO_REWIND;
-                    introTimer = 0.0f;
                     audio.StopWind();
                 }
 
@@ -246,127 +234,17 @@ int main() {
             }
         }
         else if (gameState == WAITING_TO_REWIND) {
-            // Let the background and kite coast naturally for 1.5 seconds
-            bg.Update(dt);
-            wau.pos.y += 400.0f * dt;
-            spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
-            itemSpawner.Update(dt, dt);
             particleManager.Update(dt);
-            
-            introTimer += dt;
-            if (introTimer >= 0.5f) { 
-                gameState = REWINDING;
-                
-                // Instantly clear the board so nothing is on screen during the rewind
-                spawner.Reset();
-                itemSpawner.Reset();
-            }
+            gameState = rewindSystem.UpdateWaiting(dt, bg, wau, spawner, itemSpawner, scoreManager, audio);
         }
         else if (gameState == REWINDING) {
-            float rewindSpeed = 3000.0f; 
-            bg.scrollSpeed = -rewindSpeed;
-            bg.Update(dt);
-            
-            scoreManager.currentAltitude -= rewindSpeed * dt;
-            if (scoreManager.currentAltitude < 0.0f) {
-                scoreManager.currentAltitude = 0.0f;
-            }
-            
-            // REMOVED spawner and itemSpawner updates here! They are now invisible.
-
-            float startPos = (float)screenHeight - bg.drawHeight;
-            if (scoreManager.currentAltitude <= 0.0f && bg.scrollY <= startPos) {
-                scoreManager.currentAltitude = 0.0f;
-                
-                wind.Reset();
-                kipas.Reset();
-                scoreManager.stringCharges = 3;
-                
-                bg.Reset(); 
-                
-                KiteProfile equipped = shopManager.GetEquippedKite();
-                wau.speed = equipped.speed;
-                wau.radius = 25.0f * equipped.sizeMultiplier;
-                wau.ChangeTexture(equipped.texturePath.c_str());
-                currentStringLength = equipped.stringLength; 
-                kid.stringLength = currentStringLength;
-                
-                introTimer = 0.0f; 
-                
-                if (skipFall) {
-                    wau.pos.y = screenHeight + 200.0f;
-                    kid.pos.x = wau.pos.x;
-                    kid.pos.y = wau.pos.y + currentStringLength;
-                    
-                    kid.isDetached = false;
-                    gameState = RISING;
-                } else {
-                    wau.pos.y = -200.0f;
-                    kid.pos.y = -400.0f; 
-                
-                    kid.isDetached = true;
-                    gameState = FALLING_DOWN;
-                }
-            }
+            gameState = rewindSystem.UpdateRewinding(dt, bg, scoreManager, wind, kipas, shopManager, wau, kid, currentStringLength, screenHeight);
         }
         else if (gameState == FALLING_DOWN) {
-            introTimer += dt;
-            
-            float fallDuration = 2.5f; 
-            float wauStartY = -200.0f;
-            float kidStartY = -400.0f;
-            float endY = screenHeight + 200.0f; 
-
-            if (introTimer < fallDuration) {
-                float t = introTimer / fallDuration;
-                float easeIn = t * t; 
-                
-                wau.pos.y = wauStartY + (endY - wauStartY) * easeIn;
-                kid.pos.y = kidStartY + (endY - kidStartY) * easeIn;
-            } else {
-                wau.pos.y = endY;
-                kid.pos.y = wau.pos.y + currentStringLength;
-                
-                kid.pos.x = wau.pos.x; 
-                
-                kid.isDetached = false; 
-                
-                gameState = RISING;
-                introTimer = 0.0f; 
-            }
+            gameState = rewindSystem.UpdateFalling(dt, wau, kid, currentStringLength, screenHeight);
         }
         else if (gameState == RISING) {
-            //bg.scrollSpeed = NORMAL_BG_SPEED;
-            bg.Update(dt);
-            
-            introTimer += dt;
-            
-            float waitDuration = 1.0f;     // 1-second pause at the bottom
-            float flightDuration = 1.5f;   // 1.5-second cinematic rise
-            float totalDuration = waitDuration + flightDuration;
-            
-            float startY = screenHeight + 200.0f;
-            float endY = screenHeight - 600.0f;
-
-            // Phase 1: Wait hidden at the bottom of the screen
-            if (introTimer < waitDuration) {
-                wau.pos.y = startY;
-                kid.pos.y = wau.pos.y + currentStringLength;
-            }
-            // Phase 2: Smoothly fly up from the bottom of the screen
-            else if (introTimer < totalDuration) {
-                float t = (introTimer - waitDuration) / flightDuration;
-                float easeOut = 1.0f - (1.0f - t) * (1.0f - t); 
-                
-                wau.pos.y = startY + (endY - startY) * easeOut;
-                kid.pos.y = wau.pos.y + currentStringLength;
-            } 
-            // Phase 3: Give control back
-            else {
-                wau.pos.y = endY;
-                kid.pos.y = wau.pos.y + currentStringLength;
-                gameState = PLAYING;
-            }
+            gameState = rewindSystem.UpdateRising(dt, bg, wau, kid, currentStringLength, screenHeight);
         }
         else if (gameState == PAUSED) {
             // We can reuse the endgame buttons. "Restart" will act as our "Resume" button here.
@@ -389,7 +267,7 @@ int main() {
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
                     
-                    introTimer = 0.0f;
+                    menuIntroTimer = 0.0f;
                     introFinished = false;
                     wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
                     kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
@@ -423,7 +301,7 @@ int main() {
                     GameManager::ResetGame(screenWidth, screenHeight, wau, kid, bg, spawner, itemSpawner, 
                         scoreManager, coinManager, wind, kipas);
                     
-                    introTimer = 0.0f;
+                    menuIntroTimer = 0.0f;
                     introFinished = false;
                     wau.Reset((float)screenWidth / 2.0f - 250.0f, (float)screenHeight + 200.0f); 
                     kid.pos = { wau.pos.x, wau.pos.y + 550.0f };
