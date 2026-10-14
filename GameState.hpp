@@ -3,6 +3,7 @@
 enum GameState {
     MENU,
     SHOP,
+    CREDITS,
     PLAYING,
     PAUSED,
     VICTORY,

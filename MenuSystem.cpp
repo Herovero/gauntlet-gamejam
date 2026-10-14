@@ -65,6 +65,9 @@ GameState MenuSystem::Update(float dt, int screenWidth, int screenHeight, Vector
             else if (GameUI::IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos)) {
                 return SHOP;
             }
+            else if (GameUI::IsCreditsButtonClicked(screenWidth, screenHeight, virtualMousePos)) {
+                return CREDITS;
+            }
         }
     }
 

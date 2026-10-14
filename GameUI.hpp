@@ -17,4 +17,8 @@ public:
     
     static void DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool showUI, Texture2D titleTex);
     static void DrawVictoryScreen(int screenWidth, int screenHeight);
+
+    static bool IsCreditsButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
+    static bool IsCreditsBackButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
+    static void DrawCreditsScreen(int screenWidth, int screenHeight, Vector2 virtualMousePos, Texture2D githubLogo, Texture2D logo42KL, Texture2D logoLarian);
 };

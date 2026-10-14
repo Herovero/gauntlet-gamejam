@@ -88,6 +88,16 @@ bool GameUI::IsMainMenuButtonClicked(int screenWidth, int screenHeight, Vector2 
     return CheckCollisionPointRec(virtualMousePos, btn);
 }
 
+bool GameUI::IsCreditsButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
+    Rectangle btn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f + 180.0f, 260.0f, 50.0f };
+    return CheckCollisionPointRec(virtualMousePos, btn);
+}
+
+bool GameUI::IsCreditsBackButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
+    Rectangle btn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 220.0f, 200.0f, 46.0f };
+    return CheckCollisionPointRec(virtualMousePos, btn);
+}
+
 void GameUI::DrawEndGameButtons(int screenWidth, int screenHeight, Vector2 virtualMousePos, bool isPaused) {
     // Restart / Resume Button (Styled with Wood & Gold)
     Rectangle restartBtn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 40.0f, 200.0f, 46.0f };
@@ -113,7 +123,7 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
     if (!showUI) return; 
 
     int panelWidth = 620;
-    int panelHeight = 350;
+    int panelHeight = 400;
     Rectangle menuPanel = {
         (float)(screenWidth / 2 - panelWidth / 2 + 250),
         (float)(screenHeight / 2 - 130),
@@ -150,6 +160,14 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
     DrawRectangleRounded(shopBtn, 0.2f, 4, shopBg);
     DrawRectangleRoundedLines(shopBtn, 0.2f, 4, shopHover ? GOLD : GetColor(0xD4AF37FF));
     DrawText("OPEN SHOP", screenWidth / 2 + 250 - MeasureText("OPEN SHOP", 20) / 2, screenHeight / 2 + 133, 20, RAYWHITE);
+
+    // Credits Button
+    Rectangle creditsBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f + 180.0f, 260.0f, 46.0f };
+    bool creditsHover = IsCreditsButtonClicked(screenWidth, screenHeight, virtualMousePos);
+    Color creditsBg = creditsHover ? GetColor(0x8D6E63FF) : GetColor(0x5D4037FF);
+    DrawRectangleRounded(creditsBtn, 0.2f, 4, creditsBg);
+    DrawRectangleRoundedLines(creditsBtn, 0.2f, 4, creditsHover ? GOLD : GetColor(0xD4AF37FF));
+    DrawText("CREDITS", screenWidth / 2 + 250 - MeasureText("CREDITS", 20) / 2, screenHeight / 2 + 193, 20, RAYWHITE);
 }
 
 void GameUI::DrawVictoryScreen(int screenWidth, int screenHeight) {
@@ -168,4 +186,57 @@ void GameUI::DrawVictoryScreen(int screenWidth, int screenHeight) {
     // Changed colors to match the warmer palette
     DrawText("MERDEKA!", screenWidth / 2 - MeasureText("MERDEKA!", 56) / 2, screenHeight / 2 - 90, 56, GetColor(0xB8860BFF));
     DrawText("You Reached the Top!", screenWidth / 2 - MeasureText("You Reached the Top!", 26) / 2, screenHeight / 2 - 18, 26, GetColor(0x3E2723FF));
+}
+
+void GameUI::DrawCreditsScreen(int screenWidth, int screenHeight, Vector2 virtualMousePos, Texture2D githubLogo, Texture2D logo42KL, Texture2D logoLarian) {
+    int panelWidth = 600;
+    int panelHeight = 550;
+    Rectangle panel = {
+        (float)(screenWidth / 2 - panelWidth / 2),
+        (float)(screenHeight / 2 - 250),
+        (float)panelWidth,
+        (float)panelHeight
+    };
+
+    DrawTraditionalFrame(panel);
+
+    // Title
+    DrawText("CREDITS", screenWidth / 2 - MeasureText("CREDITS", 40) / 2, panel.y + 30, 40, GOLD);
+
+    // Developer Section
+    DrawText("Developer:", screenWidth / 2 - MeasureText("Developer:", 24) / 2, panel.y + 90, 24, GetColor(0x3E2723FF));
+    DrawText("Veron Siaw", screenWidth / 2 - MeasureText("Veron Siaw", 28) / 2, panel.y + 120, 28, DARKBLUE);
+    
+    // GitHub Logo and Handle (Fixed Placement)
+    float ghSize = 40.0f;
+    Rectangle ghSource = { 0.0f, 0.0f, (float)githubLogo.width, (float)githubLogo.height };
+    Rectangle ghDest = { (float)screenWidth / 2 - 75, panel.y + 160, ghSize, ghSize }; 
+    DrawTexturePro(githubLogo, ghSource, ghDest, { 0.0f, 0.0f }, 0.0f, WHITE);
+    
+    DrawText("Herovero", screenWidth / 2 - 25, panel.y + 168, 24, DARKBLUE);
+
+    // Special Thanks Section
+    DrawText("Special Thanks:", screenWidth / 2 - MeasureText("Special Thanks:", 24) / 2, panel.y + 240, 24, GetColor(0x3E2723FF));
+    
+    // 42KL Logo (Fixed Aspect Ratio and Size)
+    float width42 = 130.0f;
+    float height42 = width42 * ((float)logo42KL.height / (float)logo42KL.width);
+    Rectangle source42 = { 0.0f, 0.0f, (float)logo42KL.width, (float)logo42KL.height };
+    Rectangle dest42 = { (float)screenWidth / 2 - 170, panel.y + 290, width42, height42 };
+    DrawTexturePro(logo42KL, source42, dest42, { 0.0f, 0.0f }, 0.0f, WHITE);
+
+    // Larian Logo (Fixed Aspect Ratio and Size)
+    float heightLarian = 160.0f;
+    float widthLarian = heightLarian * ((float)logoLarian.width / (float)logoLarian.height);
+    Rectangle sourceLarian = { 0.0f, 0.0f, (float)logoLarian.width, (float)logoLarian.height };
+    Rectangle destLarian = { (float)screenWidth / 2 + 40, panel.y + 280, widthLarian, heightLarian };
+    DrawTexturePro(logoLarian, sourceLarian, destLarian, { 0.0f, 0.0f }, 0.0f, WHITE);
+
+    // Back Button
+    Rectangle backBtn = { (float)screenWidth / 2.0f - 100.0f, panel.y + 470.0f, 200.0f, 46.0f };
+    bool backHover = IsCreditsBackButtonClicked(screenWidth, screenHeight, virtualMousePos);
+    Color backBg = backHover ? GetColor(0x8D6E63FF) : GetColor(0x5D4037FF);
+    DrawRectangleRounded(backBtn, 0.2f, 4, backBg);
+    DrawRectangleRoundedLines(backBtn, 0.2f, 4, backHover ? GOLD : GetColor(0xD4AF37FF));
+    DrawText("BACK", screenWidth / 2 - MeasureText("BACK", 20) / 2, backBtn.y + 13, 20, RAYWHITE);
 }

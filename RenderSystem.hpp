@@ -20,5 +20,6 @@ public:
                      Background& bg, Background& menuBg, WauBulan& wau, SwingingKid& kid,
                      ShopManager& shopManager, CoinManager& coinManager, WindForce& wind,
                      KipasSatay& kipas, ObstacleSpawner& spawner, ItemSpawner& itemSpawner,
-                     ParticleManager& particleManager, ScoreManager& scoreManager);
+                     ParticleManager& particleManager, ScoreManager& scoreManager, 
+                     Texture2D texGithub, Texture2D tex42KL, Texture2D texLarian, Texture2D bgNight);
 };

@@ -6,7 +6,8 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
                         Background& bg, Background& menuBg, WauBulan& wau, SwingingKid& kid,
                         ShopManager& shopManager, CoinManager& coinManager, WindForce& wind,
                         KipasSatay& kipas, ObstacleSpawner& spawner, ItemSpawner& itemSpawner,
-                        ParticleManager& particleManager, ScoreManager& scoreManager) {
+                        ParticleManager& particleManager, ScoreManager& scoreManager,
+                        Texture2D texGithub, Texture2D tex42KL, Texture2D texLarian, Texture2D bgNight) {
     
     if (gameState == SHOP) {
         shopManager.Draw(screenWidth, screenHeight, coinManager.totalCoins, virtualMousePos);
@@ -31,6 +32,18 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             DrawText(btnText, screenWidth / 2 + 250 - MeasureText(btnText, 20) / 2, screenHeight / 2 + 73, 20, RAYWHITE);
     #endif
         }
+    }
+    else if (gameState == CREDITS) {
+        // Calculate the height needed to crop a screen-ratio square from the top of the image
+        float cropHeight = (float)bgNight.width * ((float)screenHeight / (float)screenWidth);
+        
+        // Start at 0,0 to capture the crescent moon and star at the top
+        Rectangle source = { 0.0f, 0.0f, (float)bgNight.width, cropHeight };
+        Rectangle dest = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight };
+        
+        DrawTexturePro(bgNight, source, dest, { 0.0f, 0.0f }, 0.0f, WHITE);
+
+        GameUI::DrawCreditsScreen(screenWidth, screenHeight, virtualMousePos, texGithub, tex42KL, texLarian);
     }
     else {
         ClearBackground(SKYBLUE);

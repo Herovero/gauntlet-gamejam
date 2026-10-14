@@ -52,6 +52,10 @@ int main() {
     Background menuBg("assets/skybackground.png", screenWidth, screenHeight, 150.0f);
     Texture2D gameTitle = LoadTexture("assets/game_title.png");
     Texture2D frozenBg = LoadTexture("assets/frozen_bg.png");
+    Texture2D texGithub = LoadTexture("assets/github.png"); 
+    Texture2D tex42KL = LoadTexture("assets/42kl.png");     
+    Texture2D texLarian = LoadTexture("assets/larian.png"); 
+    Texture2D bgNight = LoadTexture("assets/background2.png");
 
     RewindSystem rewindSystem;
     VirtualCanvas canvas(screenWidth, screenHeight);
@@ -94,6 +98,11 @@ int main() {
             gameState = ShopSystem::Update(dt, screenWidth, virtualMousePos, shopManager, 
                                            coinManager, audio, wau, kid, currentStringLength);
         }
+        else if (gameState == CREDITS) {
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && GameUI::IsCreditsBackButtonClicked(screenWidth, screenHeight, virtualMousePos)) {
+                gameState = MENU;
+            }
+        }
         else if (gameState == PLAYING) {
             gameState = GameplaySystem::Update(dt, screenWidth, screenHeight, virtualMousePos, 
                                                hitStopTimer, bg, wau, kid, wind, kipas, scoreManager, 
@@ -129,7 +138,8 @@ int main() {
         canvas.BeginMode();
         RenderSystem::Draw(gameState, screenWidth, screenHeight, virtualMousePos, introFinished, 
                            gameTitle, frozenBg, bg, menuBg, wau, kid, shopManager, coinManager, 
-                           wind, kipas, spawner, itemSpawner, particleManager, scoreManager);
+                           wind, kipas, spawner, itemSpawner, particleManager, scoreManager,
+                           texGithub, tex42KL, texLarian, bgNight);
         canvas.EndModeAndDraw();
     }
 
@@ -144,6 +154,10 @@ int main() {
 
     UnloadTexture(gameTitle);
     UnloadTexture(frozenBg);
+    UnloadTexture(texGithub);
+    UnloadTexture(tex42KL);
+    UnloadTexture(texLarian);
+    UnloadTexture(bgNight);
     audio.Unload();
     CloseAudioDevice();
     CloseWindow(); 
