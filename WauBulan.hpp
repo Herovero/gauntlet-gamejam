@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+#include "VirtualJoystick.hpp"
 
 class WauBulan {
     public:
@@ -8,6 +9,9 @@ class WauBulan {
         float radius;
         float speed;
         float invincibleTimer;
+
+        // Android accelerometer
+        bool isTiltEnabled = false;
 
         // Sprite properties
         Texture2D texture;
@@ -25,4 +29,7 @@ class WauBulan {
         void Reset(float startX, float startY);
         void ChangeTexture(const char* newTexturePath);
         void Unload();
+        void ResetJoystick();
+    private:
+        VirtualJoystick joystick;
 };

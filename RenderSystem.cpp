@@ -16,6 +16,21 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
         wau.Draw();
         kid.Draw(wau.pos);
         GameUI::DrawMainMenu(screenWidth, screenHeight, virtualMousePos, introFinished, gameTitle);
+
+        if (introFinished) {
+    #if defined(__ANDROID__)
+            // Updated width and X position to match Start/Shop buttons
+            Rectangle toggleBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f + 60.0f, 260.0f, 46.0f };
+            
+            bool isHovered = CheckCollisionPointRec(virtualMousePos, toggleBtn);
+            Color btnBg = isHovered ? GetColor(0x8D6E63FF) : GetColor(0x5D4037FF);
+            DrawRectangleRounded(toggleBtn, 0.2f, 4, btnBg);
+            DrawRectangleRoundedLines(toggleBtn, 0.2f, 4, isHovered ? GOLD : GetColor(0xD4AF37FF));
+            
+            const char* btnText = wau.isTiltEnabled ? "CONTROL: TILT" : "CONTROL: JOYSTICK";
+            DrawText(btnText, screenWidth / 2 + 250 - MeasureText(btnText, 20) / 2, screenHeight / 2 + 73, 20, RAYWHITE);
+    #endif
+        }
     }
     else {
         ClearBackground(SKYBLUE);

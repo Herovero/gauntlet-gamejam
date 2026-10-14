@@ -23,11 +23,23 @@
 #include "KipasSatay.hpp"
 #include <cmath>
 
+#if defined(__ANDROID__)
+    #include "raymob.h"
+#endif
+
 int main() {
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
     InitWindow(screenWidth, screenHeight, "Wau Bulan Rising");
+    #if defined(__ANDROID__)
+    // Official NDK workaround to force the linker to keep the Android entry point
+    app_dummy(); 
+    
+    // Turn on the device sensors so WauBulan.cpp can read the tilt data
+    InitSensorManager();
+    EnableSensor(SENSOR_ACCELEROMETER);
+    #endif
     SetExitKey(KEY_NULL);
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60); 
@@ -106,6 +118,12 @@ int main() {
                                               audio, wau, kid, bg, spawner, itemSpawner, scoreManager, 
                                               coinManager, wind, kipas, shopManager, menuIntroTimer, 
                                               introFinished, currentStringLength, rewindSystem);
+        }
+
+        // Instantly hide and release the joystick when an obstacle is hit, 
+        // during the rewind/falling sequences, or when paused.
+        if (gameState != PLAYING || hitStopTimer > 0.0f) {
+            wau.ResetJoystick();
         }
 
         canvas.BeginMode();

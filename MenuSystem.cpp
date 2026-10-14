@@ -34,6 +34,15 @@ GameState MenuSystem::Update(float dt, int screenWidth, int screenHeight, Vector
         kid.pos.y = wau.pos.y + currentStringLength;
 
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        
+    #if defined(__ANDROID__)
+        // Wider button dimensions, only active on Android
+        Rectangle toggleBtn = { screenWidth / 2.0f + 120.0f, screenHeight / 2.0f + 60.0f, 260.0f, 46.0f };
+        if (CheckCollisionPointRec(virtualMousePos, toggleBtn)) {
+            wau.isTiltEnabled = !wau.isTiltEnabled;
+        }
+        else
+    #endif
             if (GameUI::IsStartButtonClicked(screenWidth, screenHeight, virtualMousePos)) {
                 audio.PlayGameBGM();
                 

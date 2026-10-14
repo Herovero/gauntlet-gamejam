@@ -35,12 +35,12 @@ void GameUI::DrawTraditionalFrame(Rectangle bounds) {
 }
 
 bool GameUI::IsStartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
-    Rectangle startBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f, 200.0f, 50.0f };
+    Rectangle startBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f, 260.0f, 50.0f };
     return CheckCollisionPointRec(virtualMousePos, startBtn);
 }
 
 bool GameUI::IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
-    Rectangle shopBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f + 70.0f, 200.0f, 50.0f };
+    Rectangle shopBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f + 120.0f, 260.0f, 50.0f };
     return CheckCollisionPointRec(virtualMousePos, shopBtn);
 }
 
@@ -79,7 +79,7 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
     if (!showUI) return; 
 
     int panelWidth = 620;
-    int panelHeight = 240;
+    int panelHeight = 350;
     Rectangle menuPanel = {
         (float)(screenWidth / 2 - panelWidth / 2 + 250),
         (float)(screenHeight / 2 - 130),
@@ -102,7 +102,7 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
     DrawTextureEx(titleTex, { (float)titleX, (float)titleY }, 0.0f, titleScale, WHITE);
 
     // Start Button (Styled with Wood & Gold)
-    Rectangle startBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f, 200.0f, 46.0f };
+    Rectangle startBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f, 260.0f, 46.0f };
     bool startHover = IsStartButtonClicked(screenWidth, screenHeight, virtualMousePos);
     Color startBg = startHover ? GetColor(0x8D6E63FF) : GetColor(0x5D4037FF);
     DrawRectangleRounded(startBtn, 0.2f, 4, startBg);
@@ -110,12 +110,12 @@ void GameUI::DrawMainMenu(int screenWidth, int screenHeight, Vector2 virtualMous
     DrawText("START GAME", screenWidth / 2 + 250 - MeasureText("START GAME", 20) / 2, screenHeight / 2 + 13, 20, RAYWHITE);
 
     // Shop Button (Styled with Wood & Gold)
-    Rectangle shopBtn = { (float)screenWidth / 2.0f + 150.0f, (float)screenHeight / 2.0f + 64.0f, 200.0f, 46.0f };
+    Rectangle shopBtn = { (float)screenWidth / 2.0f + 120.0f, (float)screenHeight / 2.0f + 120.0f, 260.0f, 46.0f };
     bool shopHover = IsShopButtonClicked(screenWidth, screenHeight, virtualMousePos);
     Color shopBg = shopHover ? GetColor(0x8D6E63FF) : GetColor(0x5D4037FF);
     DrawRectangleRounded(shopBtn, 0.2f, 4, shopBg);
-    DrawRectangleRoundedLines(shopBtn, 0.2f, 4, shopHover ? GOLD : GetColor(0xD4AF37FF)); // Removed thickness number!
-    DrawText("OPEN SHOP", screenWidth / 2 + 250 - MeasureText("OPEN SHOP", 20) / 2, screenHeight / 2 + 77, 20, RAYWHITE);
+    DrawRectangleRoundedLines(shopBtn, 0.2f, 4, shopHover ? GOLD : GetColor(0xD4AF37FF));
+    DrawText("OPEN SHOP", screenWidth / 2 + 250 - MeasureText("OPEN SHOP", 20) / 2, screenHeight / 2 + 133, 20, RAYWHITE);
 }
 
 void GameUI::DrawVictoryScreen(int screenWidth, int screenHeight) {

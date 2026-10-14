@@ -1,6 +1,10 @@
 #include "WauBulan.hpp"
 #include <cmath>
 
+#if defined(__ANDROID__)
+    #include "raymob.h"
+#endif
+
 WauBulan::WauBulan(float startX, float startY, const char* texturePath) {
     pos = { startX, startY };
     radius = 25.0f;
@@ -27,23 +31,50 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
     targetRotation = 0.0f;
     stretchFactor = 1.0f;
 
-    // Movement
-    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-        pos.x -= speed * dt;
-        targetRotation -= 20.0f;
+    float currentSpeedX = 0.0f;
+    float currentSpeedY = 0.0f;
+
+    #if defined(__ANDROID__)
+        if (isTiltEnabled) {
+            Vector3 accel = GetAccelerotmerAxis();
+            float tiltY = accel.y;
+            float tiltX = accel.x;
+            
+            if (tiltY > 0.5f) { currentSpeedX = speed; targetRotation += 20.0f; }
+            else if (tiltY < -0.5f) { currentSpeedX = -speed; targetRotation -= 20.0f; }
+
+            if (tiltX > 1.5f) { currentSpeedY = speed; stretchFactor = 0.90f; }
+            else if (tiltX < -1.5f) { currentSpeedY = -speed; stretchFactor = 1.15f; }
+        } else {
+            joystick.Update();
+        }
+    #else
+        if (isTiltEnabled) {
+            // PC Keyboard Fallback
+            if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) { currentSpeedX = -speed; targetRotation -= 20.0f; }
+            if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) { currentSpeedX = speed; targetRotation += 20.0f; }
+            if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) { currentSpeedY = -speed; stretchFactor = 1.15f; }
+            if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) { currentSpeedY = speed; stretchFactor = 0.90f; }
+        } else {
+            joystick.Update();
+        }
+    #endif
+
+    if (!isTiltEnabled && joystick.IsActive()) {
+        Vector2 input = joystick.GetInput();
+        currentSpeedX = input.x * speed;
+        currentSpeedY = input.y * speed;
+        
+        if (input.x > 0.1f) targetRotation += 20.0f;
+        else if (input.x < -0.1f) targetRotation -= 20.0f;
+
+        if (input.y < -0.1f) stretchFactor = 1.15f;
+        else if (input.y > 0.1f) stretchFactor = 0.90f;
     }
-    if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-        pos.x += speed * dt;
-        targetRotation += 20.f;
-    }
-    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) {
-        pos.y -= speed * dt;
-        stretchFactor = 1.15f;
-    }
-    if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) {
-        pos.y += speed * dt;
-        stretchFactor = 0.90f;
-    }
+
+    // Apply movement
+    pos.x += currentSpeedX * dt;
+    pos.y += currentSpeedY * dt;
 
     // Steer Animation (Smoothly interpolate current rotation to target rotation)
     rotation += (targetRotation - rotation) * 10.0f * dt;
@@ -92,6 +123,10 @@ void WauBulan::Draw() {
 
     // Collision hitbox debug
     DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
+
+    if (!isTiltEnabled) {
+        joystick.Draw();
+    }
 }
 
 void WauBulan::Reset(float startX, float startY) {
@@ -117,4 +152,8 @@ void WauBulan::ChangeTexture(const char* newTexturePath) {
 
 void WauBulan::Unload() {
     UnloadTexture(texture);
+}
+
+void WauBulan::ResetJoystick() {
+    joystick.Reset();
 }
