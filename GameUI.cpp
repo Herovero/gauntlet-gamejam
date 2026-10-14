@@ -44,6 +44,40 @@ bool GameUI::IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virt
     return CheckCollisionPointRec(virtualMousePos, shopBtn);
 }
 
+bool GameUI::IsPauseButtonClicked(int screenWidth, Vector2 virtualMousePos) {
+    Vector2 center = { (float)screenWidth - 60.0f, 60.0f };
+    float radius = 32.0f;
+    return CheckCollisionPointCircle(virtualMousePos, center, radius);
+}
+
+void GameUI::DrawPauseButton(int screenWidth, Vector2 virtualMousePos) {
+    Vector2 center = { (float)screenWidth - 60.0f, 60.0f };
+    float radius = 32.0f;
+    
+    bool isHovered = CheckCollisionPointCircle(virtualMousePos, center, radius);
+    
+    // Colors matching the reference image
+    Color rimColor = GetColor(0xDF9C51FF);    // Light wood/orange rim
+    Color innerColor = GetColor(0xD5661DFF);  // Vibrant orange center
+    Color shadowColor = GetColor(0xA53A0BFF); // Deep inner shadow
+    
+    if (isHovered) {
+        rimColor = GetColor(0xF0B062FF);
+        innerColor = GetColor(0xE8792EFF);
+    }
+
+    // 1. Outer rim
+    DrawCircleV(center, radius, rimColor);
+    // 2. Inner shadow/depth offset slightly downwards
+    DrawCircleV({center.x, center.y + 3.0f}, radius - 6.0f, shadowColor);
+    // 3. Inner orange center
+    DrawCircleV(center, radius - 6.0f, innerColor);
+
+    // 4. Two white pause bars
+    DrawRectangleRounded({ center.x - 10.0f, center.y - 12.0f, 7.0f, 24.0f }, 0.2f, 4, RAYWHITE);
+    DrawRectangleRounded({ center.x + 3.0f, center.y - 12.0f, 7.0f, 24.0f }, 0.2f, 4, RAYWHITE);
+}
+
 bool GameUI::IsRestartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos) {
     Rectangle btn = { (float)screenWidth / 2.0f - 100.0f, (float)screenHeight / 2.0f + 40.0f, 200.0f, 50.0f };
     return CheckCollisionPointRec(virtualMousePos, btn);

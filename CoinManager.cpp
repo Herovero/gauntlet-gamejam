@@ -16,9 +16,9 @@ void CoinManager::AddCoins(int amount) {
 void CoinManager::Draw(int screenWidth) {
     std::string coinText = "x " + std::to_string(totalCoins);
     
-    // Position it in the top right corner
-    float xPos = (float)screenWidth - 150.0f;
-    float yPos = 30.0f;
+    // Position it in the top left corner
+    float xPos = (float)screenWidth - 1260.0f;
+    float yPos = 110.0f;
 
     if (uiCoinIcon.id > 0) {
         // Draw the coin icon next to the text

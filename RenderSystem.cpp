@@ -54,6 +54,8 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
                 DrawRectangle(0, 0, screenWidth, screenHeight, Fade(SKYBLUE, 0.25f));
                 DrawRectangleLinesEx({0, 0, (float)screenWidth, (float)screenHeight}, 10.0f, Fade(WHITE, 0.4f));
             }
+
+            GameUI::DrawPauseButton(screenWidth, virtualMousePos);
         }
         else if (gameState == REWINDING) {
             // Characters and obstacles are hidden while reversing

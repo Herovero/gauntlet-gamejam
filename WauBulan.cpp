@@ -49,15 +49,11 @@ void WauBulan::Update(float dt, int screenWidth, int screenHeight) {
             joystick.Update();
         }
     #else
-        if (isTiltEnabled) {
-            // PC Keyboard Fallback
-            if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) { currentSpeedX = -speed; targetRotation -= 20.0f; }
-            if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) { currentSpeedX = speed; targetRotation += 20.0f; }
-            if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) { currentSpeedY = -speed; stretchFactor = 1.15f; }
-            if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) { currentSpeedY = speed; stretchFactor = 0.90f; }
-        } else {
-            joystick.Update();
-        }
+        // PC Keyboard Fallback
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) { currentSpeedX = -speed; targetRotation -= 20.0f; }
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) { currentSpeedX = speed; targetRotation += 20.0f; }
+        if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) { currentSpeedY = -speed; stretchFactor = 1.15f; }
+        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) { currentSpeedY = speed; stretchFactor = 0.90f; }
     #endif
 
     if (!isTiltEnabled && joystick.IsActive()) {
@@ -122,7 +118,7 @@ void WauBulan::Draw() {
     DrawTexturePro(texture, sourceRec, destRec, origin, finalRotation, tint);
 
     // Collision hitbox debug
-    DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
+    //DrawCircleLines((int)renderPos.x, (int)renderPos.y, radius, LIME);
 
     if (!isTiltEnabled) {
         joystick.Draw();

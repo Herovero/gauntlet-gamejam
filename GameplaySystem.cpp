@@ -1,5 +1,6 @@
 #include "GameplaySystem.hpp"
 #include "CollisionManager.hpp"
+#include "GameUI.hpp"
 
 GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Vector2 virtualMousePos,
                                  float& hitStopTimer, Background& bg, WauBulan& wau, SwingingKid& kid,
@@ -8,8 +9,10 @@ GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Ve
                                  ParticleManager& particleManager, CoinManager& coinManager,
                                  AudioManager& audio, RewindSystem& rewindSystem) {
     // Pause check
-    if (IsKeyPressed(KEY_ESCAPE) || IsKeyPressed(KEY_P)) {
+    if (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE) || 
+   (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && GameUI::IsPauseButtonClicked(screenWidth, virtualMousePos))) {
         audio.StopWind();
+        wau.ResetJoystick();
         return PAUSED;
     }
 
