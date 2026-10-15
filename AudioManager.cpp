@@ -27,7 +27,7 @@ AudioManager::AudioManager() {
     sfxSnap = LoadSound("assets/snap_sfx.wav");
     sfxFreeze = LoadSound("assets/frozen_sfx.wav");
     
-    SetSoundVolume(sfxHornbill, 0.9f);
+    SetSoundVolume(sfxHornbill, 0.6f);
     SetSoundVolume(sfxCoin, 0.8f);
     SetSoundVolume(sfxPurchase, 1.0f);
     SetSoundVolume(sfxWind, 1.5f);

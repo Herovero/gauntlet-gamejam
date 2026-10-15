@@ -48,7 +48,7 @@ int main() {
     AudioManager audio;
     audio.PlayMenuBGM();
 
-    Background bg("assets/background2.png", screenWidth, screenHeight, 30.0f);
+    Background bg("assets/background.png", screenWidth, screenHeight, 30.0f);
     Background menuBg("assets/skybackground.png", screenWidth, screenHeight, 150.0f);
     Texture2D gameTitle = LoadTexture("assets/game_title.png");
     Texture2D frozenBg = LoadTexture("assets/frozen_bg.png");

@@ -49,18 +49,15 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed, 
     else if (currentAltitude <= 900.0f) {
         if (!gapExists) {
             pool.push_back(4); // Gap
-        } else {
-            // Fallback so the pool is never empty if a gap is already falling
-            pool.push_back(3);
         }
     }
     else {
-        // Endless Mode: Everything is allowed to spawn!
-        pool.push_back(0);
-        pool.push_back(1);
-        pool.push_back(2);
         pool.push_back(3);
-        if (!gapExists) pool.push_back(4);
+    }
+
+    // If no valid obstacle can be spawned right now (e.g., a gap is already on screen), exit cleanly
+    if (pool.empty()) {
+        return;
     }
 
     // Pick a random type from the available pool
