@@ -9,7 +9,7 @@ public:
 
     CoinManager();
     void AddCoins(int amount);
-    void Draw(int screenWidth);
+    void Draw();
     void DrawGameOver(int screenWidth, int screenHeight);
     void Reset();
     void Unload();

@@ -151,6 +151,7 @@ int main() {
     itemSpawner.Unload();
     kipas.Unload();
     shopManager.Unload();
+    scoreManager.Unload();
 
     UnloadTexture(gameTitle);
     UnloadTexture(frozenBg);

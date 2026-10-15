@@ -7,6 +7,12 @@ ScoreManager::ScoreManager() {
     baseClimbRate = 5.0f;
     boostClimbRate = 25.0f;
     stringCharges = 3;
+
+    texTangsi = LoadTexture("assets/talitangsi.png");
+    if (texTangsi.id > 0) {
+        GenTextureMipmaps(&texTangsi);
+        SetTextureFilter(texTangsi, TEXTURE_FILTER_TRILINEAR);
+    }
 }
 
 void ScoreManager::Update(float dt, bool isDetached, bool isBoosted) {
@@ -24,14 +30,21 @@ void ScoreManager::Update(float dt, bool isDetached, bool isBoosted) {
 
 void ScoreManager::Draw() {
     // 1. Draw a smaller traditional frame for the HUD
-    Rectangle hudPanel = { 10.0f, 10.0f, 260.0f, 100.0f };
+    Rectangle hudPanel = { 10.0f, 10.0f, 260.0f, 140.0f };
     GameUI::DrawTraditionalFrame(hudPanel);
 
     // 2. Use dark brown colors instead of neon blue/yellow to contrast with the rice paper
     Color textDark = GetColor(0x3E2723FF); 
     
     DrawText(TextFormat("Altitude: %d m", (int)currentAltitude), 30, 25, 24, textDark);
-    DrawText(TextFormat("Tali Tangsi: %d", stringCharges), 30, 65, 24, textDark);
+    if (texTangsi.id > 0) {
+        float tangsiSize = 40.0f;
+        Rectangle source = { 0.0f, 0.0f, (float)texTangsi.width, (float)texTangsi.height };
+        Rectangle dest = { 30.0f, 65.0f, tangsiSize, tangsiSize };
+        DrawTexturePro(texTangsi, source, dest, {0.0f, 0.0f}, 0.0f, WHITE);
+    }
+
+    DrawText(TextFormat("x %d", stringCharges), 80, 73, 24, textDark);
 }
 
 void ScoreManager::DrawGameOver(int screenWidth, int screenHeight) {
@@ -61,4 +74,8 @@ void ScoreManager::DrawGameOver(int screenWidth, int screenHeight) {
 void ScoreManager::Reset() {
     currentAltitude = 0.0f;
     stringCharges = 3;
+}
+
+void ScoreManager::Unload() {
+    UnloadTexture(texTangsi);
 }

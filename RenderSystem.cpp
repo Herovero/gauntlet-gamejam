@@ -59,7 +59,7 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             itemSpawner.Draw();
             particleManager.Draw();
             scoreManager.Draw();
-            coinManager.Draw(screenWidth);
+            coinManager.Draw();
 
             if (itemSpawner.IsSlowMoActive()) {
                 Rectangle source = { 0.0f, 0.0f, (float)frozenBg.width, (float)frozenBg.height };
@@ -102,7 +102,7 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             itemSpawner.Draw();
             particleManager.Draw();
             scoreManager.Draw();
-            coinManager.Draw(screenWidth);
+            coinManager.Draw();
 
             DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
             DrawText("PAUSED", screenWidth / 2 - MeasureText("PAUSED", 60) / 2, screenHeight / 2 - 150, 60, WHITE);
