@@ -38,6 +38,9 @@ public:
     int CheckCoinCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius);
     int CheckAisKacangCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius);
     
+    bool hasAisKacangBuff = false;
+    void TriggerSlowMo();
+    void CancelSlowMo();    
     bool IsSlowMoActive() const;
     bool IsBoostActive() const;
 

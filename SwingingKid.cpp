@@ -125,7 +125,7 @@ void SwingingKid::Detach(float wauPosX) {
 void SwingingKid::TryReattach(Vector2 virtualMousePos, float wauPosX, float wauPosY, float wauRadius, float& wauInvincibleTimer, int& stringCharges) {
     if (isDetached && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && stringCharges > 0) {
         Vector2 wauPos = { wauPosX, wauPosY };
-        if (CheckCollisionPointCircle(virtualMousePos, wauPos, wauRadius * 3.0f)) {
+        if (CheckCollisionPointCircle(virtualMousePos, wauPos, wauRadius * 5.0f)) {
             stringCharges--;
             isDetached = false;
             wauInvincibleTimer = 2.0f;

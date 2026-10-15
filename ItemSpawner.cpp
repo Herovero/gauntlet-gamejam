@@ -110,7 +110,9 @@ int ItemSpawner::CheckAisKacangCollisions(Vector2 wauPos, float wauRadius, Vecto
     bool collected = false;
     for (auto it = aisKacangItems.begin(); it != aisKacangItems.end(); ) {
         if ((*it)->CheckCollision(wauPos, wauRadius) || (*it)->CheckCollision(kidHitboxPos, kidRadius)) {
-            slowMoTimer = 5.0f; // Start 5s slow-mo window
+            
+            hasAisKacangBuff = true; // Store the buff for later instead of activating it!
+            
             collected = true;
             it = aisKacangItems.erase(it);
         } else {
@@ -129,6 +131,14 @@ int ItemSpawner::CheckCoinCollisions(Vector2 wauPos, float wauRadius, Vector2 ki
         } else ++it;
     }
     return coinsCollected;
+}
+
+void ItemSpawner::TriggerSlowMo() {
+    slowMoTimer = 5.0f; 
+}
+
+void ItemSpawner::CancelSlowMo() {
+    slowMoTimer = 0.0f;
 }
 
 bool ItemSpawner::IsBoostActive() const { return boostTimer > 0.0f; }
@@ -150,6 +160,8 @@ void ItemSpawner::Reset() {
 
     boostTimer = 0.0f;
     slowMoTimer = 0.0f;
+    
+    hasAisKacangBuff = false;
 }
 
 void ItemSpawner::Unload() {

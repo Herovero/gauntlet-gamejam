@@ -1,4 +1,5 @@
 #include "GameUI.hpp"
+#include <cmath>
 
 void GameUI::DrawTraditionalFrame(Rectangle bounds) {
     // Colors
@@ -31,6 +32,38 @@ void GameUI::DrawTraditionalFrame(Rectangle bounds) {
 
     for (int i = 0; i < 4; i++) {
         DrawPoly(corners[i], 4, 5.0f, 45.0f, goldBorder);
+    }
+}
+
+void GameUI::DrawItemBuffs(bool hasAisKacang, bool isSlowMoActive, bool isBoostActive, Texture2D texAisKacang, Texture2D texBungaRaya) {
+    // Pulsing sine wave calculation (flashes smoothly between 30% and 100% opacity)
+    float pulse = (std::sin((float)GetTime() * 10.0f) + 1.0f) / 2.0f;
+    float alpha = 0.3f + (pulse * 0.7f);
+    Color flashTint = Fade(WHITE, alpha);
+
+    float startX = 280.0f; // Positioned right next to the HUD frame (width 260 + margin)
+    float startY = 20.0f;
+    float iconSize = 45.0f;
+
+    // 1. Banked Ais Kacang Icon (Flashes when collected; disappears when slow motion is activated)
+    if (hasAisKacang && !isSlowMoActive) {
+        if (texAisKacang.id > 0) {
+            Rectangle source = { 0.0f, 0.0f, (float)texAisKacang.width, (float)texAisKacang.height };
+            Rectangle dest = { startX, startY, iconSize, iconSize };
+            DrawTexturePro(texAisKacang, source, dest, { 0.0f, 0.0f }, 0.0f, flashTint);
+            
+            // Shift X rightwards so Bunga Raya can draw alongside if both are active
+            startX += iconSize + 10.0f; 
+        }
+    }
+
+    // 2. Active Bunga Raya Icon (Flashes while speed boost is active; disappears when boost expires)
+    if (isBoostActive) {
+        if (texBungaRaya.id > 0) {
+            Rectangle source = { 0.0f, 0.0f, (float)texBungaRaya.width, (float)texBungaRaya.height };
+            Rectangle dest = { startX, startY, iconSize, iconSize };
+            DrawTexturePro(texBungaRaya, source, dest, { 0.0f, 0.0f }, 0.0f, flashTint);
+        }
     }
 }
 

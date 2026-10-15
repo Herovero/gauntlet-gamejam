@@ -30,8 +30,8 @@ GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Ve
     bg.scrollSpeed = itemSpawner.IsBoostActive() ? BOOST_BG_SPEED : NORMAL_BG_SPEED;
     bg.Update(envDt);
 
-    if (!kid.isDetached) wau.Update(dt, screenWidth, screenHeight);
-    else wau.pos.y += 400.0f * dt;
+    if (!kid.isDetached) wau.Update(envDt, screenWidth, screenHeight);
+    else wau.pos.y += 400.0f * envDt;
     
     bool windWasActive = wind.IsActive();
     float currentAltitude = scoreManager.currentAltitude;
@@ -39,8 +39,8 @@ GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Ve
     if (!windWasActive && wind.IsActive()) audio.PlayWind(); 
 
     kipas.Update(envDt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
-    kid.Update(dt, wau.pos, wind.GetForce());
-    scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
+    kid.Update(envDt, wau.pos, wind.GetForce());
+    scoreManager.Update(envDt, kid.isDetached, itemSpawner.IsBoostActive());
     spawner.Update(envDt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
     itemSpawner.Update(dt, envDt, currentAltitude);
     particleManager.Update(dt);
@@ -56,12 +56,22 @@ GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Ve
         audio.PlayHit();
         kid.Detach(wau.pos.x);
         hitStopTimer = 0.1f;
+
+        // If the player stores an Ais Kacang, activate the slow-mo to help them save the kid
+        if (itemSpawner.hasAisKacangBuff) {
+            itemSpawner.hasAisKacangBuff = false;
+            itemSpawner.TriggerSlowMo();
+            audio.PlayFreeze();
+        }
     }
 
     bool wasDetached = kid.isDetached;
     kid.TryReattach(virtualMousePos, wau.pos.x, wau.pos.y, wau.radius, wau.invincibleTimer, scoreManager.stringCharges);
 
-    if (wasDetached && !kid.isDetached) audio.PlaySnap();
+    if (wasDetached && !kid.isDetached) {
+        audio.PlaySnap();
+        itemSpawner.CancelSlowMo(); 
+    }
 
     // Death transition trigger
     if (kid.isDetached && (kid.pos.y - kid.radius) > (float)screenHeight) {

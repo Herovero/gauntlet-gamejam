@@ -29,7 +29,7 @@ void CollisionManager::HandleItemCollections(WauBulan& wau, SwingingKid& kid, It
     }
 
     if (itemSpawner.CheckAisKacangCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius) > 0) {
-        audio.PlayFreeze();
+        audio.PlayItem();
     }
 
     int collectedCoins = itemSpawner.CheckCoinCollisions(wau.pos, wau.radius, kidHitboxPos, kid.radius);

@@ -61,6 +61,12 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             scoreManager.Draw();
             coinManager.Draw();
 
+            GameUI::DrawItemBuffs(itemSpawner.hasAisKacangBuff, 
+                itemSpawner.IsSlowMoActive(), 
+                itemSpawner.IsBoostActive(), 
+                itemSpawner.texAisKacang, 
+                itemSpawner.texBungaRaya);
+
             if (itemSpawner.IsSlowMoActive()) {
                 Rectangle source = { 0.0f, 0.0f, (float)frozenBg.width, (float)frozenBg.height };
                 Rectangle dest = { 0.0f, 0.0f, (float)screenWidth, (float)screenHeight };
@@ -107,6 +113,12 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
             DrawText("PAUSED", screenWidth / 2 - MeasureText("PAUSED", 60) / 2, screenHeight / 2 - 150, 60, WHITE);
             GameUI::DrawEndGameButtons(screenWidth, screenHeight, virtualMousePos, true);
+
+            GameUI::DrawItemBuffs(itemSpawner.hasAisKacangBuff, 
+                itemSpawner.IsSlowMoActive(), 
+                itemSpawner.IsBoostActive(), 
+                itemSpawner.texAisKacang, 
+                itemSpawner.texBungaRaya);
         }
         else if (gameState == VICTORY) {
             wau.Draw();

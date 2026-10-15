@@ -4,6 +4,8 @@
 class GameUI {
 public:
     static void DrawTraditionalFrame(Rectangle bounds);
+
+    static void DrawItemBuffs(bool hasAisKacang, bool isSlowMoActive, bool isBoostActive, Texture2D texAisKacang, Texture2D texBungaRaya);
     
     static bool IsStartButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
     static bool IsShopButtonClicked(int screenWidth, int screenHeight, Vector2 virtualMousePos);
