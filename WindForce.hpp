@@ -9,7 +9,7 @@ public:
     float nextWindTimer;
 
     WindForce();
-    void Update(float dt);
+    void Update(float dt, float currentAltitude);
     void Draw(int screenWidth);
     float GetForce() const;
     void Reset();

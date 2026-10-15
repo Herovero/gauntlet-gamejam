@@ -46,7 +46,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed, 
         pool.push_back(1); // Flying Left
         pool.push_back(2); // Flying Right
     }
-    else if (currentAltitude <= 800.0f) {
+    else if (currentAltitude <= 900.0f) {
         if (!gapExists) {
             pool.push_back(4); // Gap
         } else {
@@ -88,7 +88,7 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed, 
 }
 
 void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed, AudioManager& audio) {
-    if (currentAltitude >= 550 && currentAltitude <= 800.0f) {
+    if (currentAltitude >= 0 && currentAltitude <= 800.0f) {
         maxObstacles = 4; // Keep the screen less crowded early on
     } else {
         maxObstacles = 6; // Ramp it up to max capacity for Endless Mode

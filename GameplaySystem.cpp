@@ -34,14 +34,15 @@ GameState GameplaySystem::Update(float dt, int screenWidth, int screenHeight, Ve
     else wau.pos.y += 400.0f * dt;
     
     bool windWasActive = wind.IsActive();
-    wind.Update(envDt);
+    float currentAltitude = scoreManager.currentAltitude;
+    wind.Update(dt, currentAltitude);
     if (!windWasActive && wind.IsActive()) audio.PlayWind(); 
 
     kipas.Update(envDt, screenWidth, wind.IsActive(), wind.IsWindFromLeft(), audio);
     kid.Update(dt, wau.pos, wind.GetForce());
     scoreManager.Update(dt, kid.isDetached, itemSpawner.IsBoostActive());
     spawner.Update(envDt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
-    itemSpawner.Update(dt, envDt);
+    itemSpawner.Update(dt, envDt, currentAltitude);
     particleManager.Update(dt);
 
     int coinsBefore = coinManager.totalCoins; 

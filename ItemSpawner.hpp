@@ -31,7 +31,7 @@ public:
     Texture2D texAisKacang;
     
     ItemSpawner(int screenWidth, int screenHeight);
-    void Update(float dt, float envDt);
+    void Update(float dt, float envDt, float currentAltitude);
     void Draw();
     int CheckBungaCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius);
     int CheckTangsiCollisions(Vector2 wauPos, float wauRadius, Vector2 kidHitboxPos, float kidRadius);

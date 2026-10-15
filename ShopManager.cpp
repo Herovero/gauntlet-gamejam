@@ -30,10 +30,10 @@ ShopManager::ShopManager() {
     GenTextureMipmaps(&t5); SetTextureFilter(t5, TEXTURE_FILTER_TRILINEAR);
 
     kites.push_back({"Wau Klasik", "assets/waubulan.png", t1, 250.0f, 1.0f, 550.0f, 0, true});
-    kites.push_back({"Wau Perintis", "assets/waubulan2.png", t2, 320.0f, 1.2f, 500.0f, 3, false});
-    kites.push_back({"Wau Samudera", "assets/waubulan3.png", t3, 370.0f, 1.1f, 450.0f, 5, false});
-    kites.push_back({"Wau Zamrud", "assets/waubulan4.png", t4, 400.0f, 0.8f, 350.0f, 10, false});
-    kites.push_back({"Wau Purnama", "assets/waubulan5.png", t5, 500.0f, 1.5f, 250.0f, 20, false});
+    kites.push_back({"Wau Perintis", "assets/waubulan2.png", t2, 320.0f, 1.2f, 500.0f, 15, false});
+    kites.push_back({"Wau Samudera", "assets/waubulan3.png", t3, 370.0f, 1.1f, 450.0f, 35, false});
+    kites.push_back({"Wau Zamrud", "assets/waubulan4.png", t4, 400.0f, 0.8f, 350.0f, 70, false});
+    kites.push_back({"Wau Purnama", "assets/waubulan5.png", t5, 500.0f, 1.5f, 250.0f, 100, false});
 }
 
 void ShopManager::Update(int& playerCoins, bool& returnToMenu, float dt, int screenWidth, Vector2 virtualMousePos) {

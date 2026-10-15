@@ -16,7 +16,7 @@ GameState RewindSystem::UpdateWaiting(float dt, Background& bg, WauBulan& wau, O
     bg.Update(dt);
     wau.pos.y += 400.0f * dt;
     spawner.Update(dt, scoreManager.currentAltitude, bg.scrollSpeed, audio);
-    itemSpawner.Update(dt, dt);
+    itemSpawner.Update(dt, dt, scoreManager.currentAltitude);
     
     timer += dt;
     if (timer >= 0.5f) { 

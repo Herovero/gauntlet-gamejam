@@ -10,7 +10,7 @@ ItemSpawner::ItemSpawner(int screenWidth, int screenHeight) {
     Reset();
 }
 
-void ItemSpawner::Update(float dt, float envDt) {
+void ItemSpawner::Update(float dt, float envDt, float currentAltitude) {
     if (boostTimer > 0.0f) boostTimer -= dt;
     if (slowMoTimer > 0.0f) slowMoTimer -= dt;
 
@@ -30,10 +30,12 @@ void ItemSpawner::Update(float dt, float envDt) {
     }
 
     // Ais Kacang Spawning
-    aisKacangSpawnTimer += envDt;
-    if (aisKacangSpawnTimer > 25.0f) {
-        aisKacangSpawnTimer = (float)GetRandomValue(-5, 5); 
-        aisKacangItems.push_back(std::make_unique<AisKacang>(screenWidth, texAisKacang));
+    if (currentAltitude >= 550.0f) {
+        aisKacangSpawnTimer += envDt;
+        if (aisKacangSpawnTimer > 25.0f) {
+            aisKacangSpawnTimer = (float)GetRandomValue(-5, 5); 
+            aisKacangItems.push_back(std::make_unique<AisKacang>(screenWidth, texAisKacang));
+        }
     }
 
     // Coin Spawning

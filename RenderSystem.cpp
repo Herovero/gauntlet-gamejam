@@ -1,5 +1,6 @@
 #include "RenderSystem.hpp"
 #include "GameUI.hpp"
+#include <cmath>
 
 void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, Vector2 virtualMousePos,
                         bool introFinished, Texture2D gameTitle, Texture2D frozenBg,
@@ -69,6 +70,21 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             }
 
             GameUI::DrawPauseButton(screenWidth, virtualMousePos);
+
+            // Draw the rescue indicator when the kid is detached/falling during PLAYING state
+            if (kid.isDetached) { 
+                float alpha = (std::sin(GetTime() * 12.0f) + 1.0f) / 2.0f; 
+                
+                const char* saveText = "TAP THE KITE TO SAVE HIM!";
+                DrawText(saveText, screenWidth / 2 - MeasureText(saveText, 30) / 2, screenHeight / 2 - 50, 30, Fade(RED, alpha));
+                
+                // Connect the line from the kid's current position to the kite
+                Vector2 kiteCenter = { wau.pos.x, wau.pos.y + 35.0f };
+                Vector2 kidCenter = { kid.pos.x, kid.pos.y };
+                
+                DrawLineEx(kidCenter, kiteCenter, 4.0f, Fade(YELLOW, alpha));
+                DrawCircleV(kiteCenter, 8.0f, Fade(YELLOW, alpha)); 
+            }
         }
         else if (gameState == REWINDING) {
             // Characters and obstacles are hidden while reversing
