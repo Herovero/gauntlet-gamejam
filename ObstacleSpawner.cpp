@@ -7,7 +7,7 @@
 ObstacleSpawner::ObstacleSpawner(int screenWidth, int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
-    this->maxObstacles = 6;
+    this->maxObstacles = 3;
 
     texFalling  = LoadTexture("assets/durian.png");
     texSwaying  = LoadTexture("assets/gasing.png");
@@ -85,12 +85,6 @@ void ObstacleSpawner::SpawnRandomObstacle(float currentAltitude, float bgSpeed, 
 }
 
 void ObstacleSpawner::Update(float dt, float currentAltitude, float bgSpeed, AudioManager& audio) {
-    if (currentAltitude >= 0 && currentAltitude <= 800.0f) {
-        maxObstacles = 4; // Keep the screen less crowded early on
-    } else {
-        maxObstacles = 6; // Ramp it up to max capacity for Endless Mode
-    }
-
     difficultyTimer += dt;
     if (difficultyTimer > 8.0f && obstacles.size() < (size_t)maxObstacles) {
         difficultyTimer = 0.0f;
