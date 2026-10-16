@@ -7,7 +7,7 @@ WindForce::WindForce() {
 
 void WindForce::Update(float dt, float currentAltitude) {
     // Prevent wind from updating/spawning entirely
-    if (currentAltitude >= 550.0f) {
+    if (currentAltitude <= 250.0f) {
         return; 
     }
 

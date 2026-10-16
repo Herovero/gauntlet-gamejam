@@ -30,7 +30,7 @@ void ItemSpawner::Update(float dt, float envDt, float currentAltitude) {
     }
 
     // Ais Kacang Spawning
-    if (currentAltitude >= 250.0f) {
+    if (currentAltitude >= 0.0f) {
         aisKacangSpawnTimer += envDt;
         if (aisKacangSpawnTimer > 25.0f) {
             aisKacangSpawnTimer = (float)GetRandomValue(-5, 5); 

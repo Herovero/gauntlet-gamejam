@@ -81,7 +81,7 @@ void RenderSystem::Draw(GameState gameState, int screenWidth, int screenHeight, 
             if (kid.isDetached) { 
                 float alpha = (std::sin(GetTime() * 12.0f) + 1.0f) / 2.0f; 
                 
-                const char* saveText = "TAP THE KITE TO SAVE HIM!";
+                const char* saveText = "TAP WAU BULAN TO SAVE THE KID!";
                 DrawText(saveText, screenWidth / 2 - MeasureText(saveText, 30) / 2, screenHeight / 2 - 50, 30, Fade(RED, alpha));
                 
                 // Connect the line from the kid's current position to the kite
